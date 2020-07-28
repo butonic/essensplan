@@ -1,9 +1,16 @@
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:english_words/english_words.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'DishModel.dart';
+
+import 'Database.dart';
 
 void main() {
-  runApp(MyApp());
+  initializeDateFormatting('de_DE', null).then((_) =>  runApp(MyApp()));
+  Intl.defaultLocale = "de_DE";
 }
 
 // the list needs to build a start and end date
@@ -12,9 +19,6 @@ void main() {
 // list of days
 // each day can have multiple dishes and notes
 //
-const String MIN_DATETIME = '2019-05-15 20:10:55';
-const String MAX_DATETIME = '2019-07-01 12:30:40';
-const String INIT_DATETIME = '2019-05-16 09:00:58';
 double _fontSize = 14;
 
 class MyApp extends StatelessWidget {
@@ -53,77 +57,82 @@ class PlanPage extends StatefulWidget {
 }
 
 class _PlanPageState extends State<PlanPage> {
-  final _days = <WordPair>[];
   final Set<WordPair> _saved = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final epoch = new DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
   @override
   Widget build(BuildContext context) {
-    //List<Item> lst = _tagStateKey.currentState?.getAllItem; lst.forEach((f) => print(f.title));
+    var now = new DateTime.now().toUtc();
+    var currentDay = now.difference(epoch).inDays; // ~18k -> 20k*2 = 40k for now
     return Scaffold(
       appBar: AppBar(
         title: Text('Planung'),
         actions: <Widget>[
+          IconButton(icon: Icon(Icons.calendar_today), onPressed: (){
+            itemScrollController.scrollTo(
+              index: currentDay,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeInOutCubic);
+            }
+          ),
           IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
         ],
       ),
-      body: _buildPlan(),
+      body: ScrollablePositionedList.builder(
+        initialScrollIndex: currentDay,
+        padding: const EdgeInsets.all(4.0),
+        itemCount: 40000,
+        itemScrollController: itemScrollController,
+        itemPositionsListener: itemPositionsListener,
+        itemBuilder: (context, i) {
+          return _buildRow(i);
+        }
+      )
     );
   }
 
-  Widget _buildPlan() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(4.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          if (index >= _days.length) {
-            _days.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_days[index]);
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    final bool alreadySaved = _saved.contains(pair);
-    return ListTile(
-      leading: Text("4. Jul"),
+Future<ListTile> _buildDayTile(int day) async {
+  List<Dish> dishes = await DBProvider.db.getDay(day);
+    var d = epoch.add(Duration(days: day));
+  return ListTile(
+      leading: Text(DateFormat('E\ndd.MM.yy').format(d)),
       title:
         Column(
-          children: [
-            OutlineButton(
-              shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(4.0),
-              ),
-              onPressed: () {
-                /*...*/
-              },
-              child: Text(pair.asPascalCase + " might be an interesting company name, who knows?"),
-            ),
-            OutlineButton(
-              onPressed: () {
-                /*...*/
-              },
-              child: Text("add"),
-            ),
-          ],
+          children: List.generate(dishes.length, (i) {
+            if (dishes[i].name != null) {
+              return Text(dishes[i].name);
+            } else {
+              return Text("Note: " + dishes[i].note);
+            }
+          })
         ),
-        /*
-      trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),
-      */
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
+        onTap: () {
+          // add a note
+          // TODO show the list of dishes and allow selecting?
+          setState(() {
+            DBProvider.db.addDishToDay(day, 0, null, "something on this day");
+          });
+        }
+    );
+
+}
+
+  Widget _buildRow(int day) {
+    return new FutureBuilder<ListTile>(
+      future: _buildDayTile(day),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data != null) {
+            return snapshot.data;
           } else {
-            _saved.add(pair);
+            return new Text("No Data found");
           }
-        });
-      },
+        }
+        return new Container(alignment: AlignmentDirectional.center,child: new CircularProgressIndicator(),);
+      }
     );
   }
 

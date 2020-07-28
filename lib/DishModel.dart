@@ -12,28 +12,24 @@ String dishToJson(Dish data) {
 
 class Dish {
   int id;
-  String firstName;
-  String lastName;
-  bool blocked;
+  String name;
+  String note;
 
   Dish({
     this.id,
-    this.firstName,
-    this.lastName,
-    this.blocked,
+    this.name,
+    this.note,
   });
 
   factory Dish.fromMap(Map<String, dynamic> json) => new Dish(
         id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        blocked: json["blocked"] == 1,
+        name: json["name"],
+        note: json["note"],
       );
 
   Map<String, dynamic> toMap() => {
         "id": id,
-        "first_name": firstName,
-        "last_name": lastName,
-        "blocked": blocked,
+        "name": name,
+        "note": note,
       };
 }
