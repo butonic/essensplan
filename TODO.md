@@ -4,13 +4,16 @@ burger menü:
 - Woche bzw nächste tage / planung
 - Gerichte
 
-Startseite: Die nächsten Tage, oben ist heute, infinite scroll
-- leerer tag: 2 icons, 1. "+",  2. notizblock im notizen hinzuzufügen
+Startseite:
+- [x] Die nächsten Tage, oben ist heute, infinite scroll
+- [x] leerer tag: 2 icons, 1. "+",  2. notizblock im notizen hinzuzufügen
   - leeres feld bleibt leer
   - durch antippen erscheinen die aktionen
     - dish hinzufügen
     - note hinzufügen
     - bearbeiten
+    - am ende der kachel oder oder als popup
+  - je gericht eine zeile
 - wenn der tag nicht leer ist: tippen auf ein element (gericht oder notiz) erscheint ein menü mit bearbeiten, notiz hinzufügen, gericht hinzufügen oder löschen
 - Lange namen möglich -> mehrzeilig
 - [x] statt woche infinite scroll

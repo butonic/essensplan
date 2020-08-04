@@ -78,7 +78,13 @@ class _PlanPageState extends State<PlanPage> {
               curve: Curves.easeInOutCubic);
             }
           ),
-          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+          IconButton(
+            icon: Icon(Icons.restaurant_menu),
+            onPressed: _pushSaved,
+            tooltip: "23", // kommt bei long press
+
+
+          ),
         ],
       ),
       body: ScrollablePositionedList.builder(
@@ -94,46 +100,41 @@ class _PlanPageState extends State<PlanPage> {
     );
   }
 
-Future<ListTile> _buildDayTile(int day) async {
-  List<Dish> dishes = await DBProvider.db.getDay(day);
-    var d = epoch.add(Duration(days: day));
-  return ListTile(
-      leading: Text(DateFormat('E\ndd.MM.yy').format(d)),
-      title:
-        Column(
-          children: List.generate(dishes.length, (i) {
-            if (dishes[i].name != null) {
-              return Text(dishes[i].name);
-            } else {
-              return Text("Note: " + dishes[i].note);
-            }
-          })
-        ),
-        onTap: () {
-          // add a note
-          // TODO show the list of dishes and allow selecting?
-          setState(() {
-            DBProvider.db.addDishToDay(day, 0, null, "something on this day");
-          });
-        }
-    );
-
-}
 
   Widget _buildRow(int day) {
-    return new FutureBuilder<ListTile>(
-      future: _buildDayTile(day),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data != null) {
-            return snapshot.data;
-          } else {
-            return new Text("No Data found");
-          }
-        }
-        return new Container(alignment: AlignmentDirectional.center,child: new CircularProgressIndicator(),);
-      }
-    );
+    var d = epoch.add(Duration(days: day));
+      return ListTile(
+        //leading: Text(DateFormat('E\ndd.MM.yy').format(d)),
+        title: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text(DateFormat('E dd.MM.yy').format(d)),
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                      // TODO choose from list of dishes
+                    setState(() {
+                      DBProvider.db.addDishToDay(day, 0, null, "something on this day");
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.note_add),
+                  onPressed: () {
+                    // TODO add editable text field
+                    setState(() {
+                      DBProvider.db.addDishToDay(day, 0, null, "something on this day");
+                    });
+                  },
+                ),
+              ],
+            ),
+            DayWidget(day: day)
+          ],
+        )
+      );
   }
 
   void _pushSaved() {
@@ -156,12 +157,170 @@ Future<ListTile> _buildDayTile(int day) async {
           ).toList();
           return Scaffold(
             appBar: AppBar(
-              title: Text('Saved Suggestions'),
+              title: Text('Gerichte'),
             ),
             body: ListView(children: divided),
           );
         },
       ),
     );
+  }
+}
+
+
+class DayWidget extends StatefulWidget {
+  final int _day;
+  DayWidget({
+    int day,
+  }): this._day = day;
+
+  @override
+  _DayWidgetState createState() => _DayWidgetState(day: _day);
+}
+class _DayWidgetState extends State<DayWidget> {
+  final int day;
+  _DayWidgetState({
+    int day,
+  }): this.day = day;
+
+  bool inEditMode = false;
+  final epoch = new DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return new FutureBuilder<Widget>(
+      future: buildDayWidget(day),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data != null) {
+            return snapshot.data;
+          } else {
+            return new Text("No Data found");
+          }
+        }
+        return new Container(alignment: AlignmentDirectional.center,child: new CircularProgressIndicator(),);
+      }
+    );
+  }
+
+  Widget renderDishes(dishes) {
+    // TODO swipe left zum löschen?
+    if (dishes.length == 0) {
+      return DishOrNoteWidget(dish: null);
+      /*return FlatButton(
+        //onPressed: toggleEditMode,
+        child: Row(
+            children: <Widget>[
+              Text("Empty"), // TODO show nothing
+              Icon(Icons.edit)
+            ],
+          ),
+
+            onPressed: () {
+              setState(() {
+                DBProvider.db.addDishToDay(day, 0, null, "something on this day");
+               // _toggleEditMode();
+              });
+            },
+      );
+      */
+    }
+    return Column(
+      children: List.generate(dishes.length, (i) {
+          return DishOrNoteWidget(dish: dishes[i]);
+        }),
+//        Row(
+//        mainAxisSize: MainAxisSize.min,
+//        children: <Widget>[
+//          RaisedButton(
+//            child: Text('➕'),
+//            onPressed: () {
+//              setState(() {
+//                DBProvider.db.addDishToDay(day, 0, 0, "something on this day");
+//              });
+//            },
+//          ),
+//          RaisedButton(
+//            child: Text('✍'),
+//            onPressed: toggleEditMode
+//            /*
+//            onPressed: () {
+//              setState(() {
+//                DBProvider.db.addDishToDay(_day, 0, null, "something on this day");
+//                _toggleEditMode();
+//              });
+//            },
+//            */
+//          ),
+//        ],
+//      )
+    );
+  }
+
+  Future<Widget> buildDayWidget(int day) async { // TODO next move the future to the DayWidget, the ListTile can be immediately rendered
+    List<Dish> dishes = await DBProvider.db.getDay(day);
+    return renderDishes(dishes);
+  }
+
+}
+
+
+class DishOrNoteWidget extends StatefulWidget {
+  final Dish _dish;
+  DishOrNoteWidget({
+    Dish dish,
+  }): this._dish = dish;
+
+  @override
+  _DishOrNoteWidgetState createState() => _DishOrNoteWidgetState(dish: _dish);
+}
+class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
+
+  final Dish _dish;
+  _DishOrNoteWidgetState({
+    Dish dish,
+  }): this._dish = dish;
+
+
+  bool inEditMode = false;
+  Widget text = Text("Empty");
+
+  @override
+  Widget build(BuildContext context) {
+
+    if (_dish == null) {
+      text = Text('');
+    } else if ( _dish.name != null) {
+      text = Text(_dish.name);
+    } else {
+      text = Text("Note: " + _dish.note);
+    }
+    if (inEditMode) {
+      return RaisedButton(
+        child: Row(
+          children: <Widget>[
+            text,
+            Icon(Icons.edit)
+          ],
+        ),
+        onPressed: toggleEditMode,
+      );
+    } else {
+      return FlatButton(
+        child: text,
+        onPressed: toggleEditMode,
+      );
+    }
+  }
+
+
+  void toggleEditMode() {
+    setState(() {
+      if (inEditMode) {
+        inEditMode = false;
+      } else {
+        inEditMode = true;
+      }
+    });
   }
 }
