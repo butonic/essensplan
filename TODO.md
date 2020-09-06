@@ -1,4 +1,4 @@
-3 Screens
+2 Screens
 
 burger menü:
 - Woche bzw nächste tage / planung
@@ -26,30 +26,32 @@ notizen werden nicht langfristig gespeichert / müssen nicht gemanaged werden
 
 Gerichte Liste
 - Gericht hinzufügen
-  - [x] name
-  - [x] keine zutaten
-  - [x] freitext zum anzeigen wenn man auf das gericht klickt
-  - [x] (zutaten) tags
-    - aus liste auswählen?
-    - kann zb auch `vegetarisch` sein
+  - db
+    - [x] name
+    - [x] keine zutaten
+    - [x] freitext zum anzeigen wenn man auf das gericht klickt
+    - [x] (zutaten) tags
+  - ui
+    - filter/sortieren nach
+      - name (suche), see https://medium.com/@thedome6/how-to-create-a-searchable-filterable-listview-in-flutter-4faf3e300477
+      - kategorien (filtert die zutaten tags)
+      - zutaten tags (1x tippen = und)
+    - Liste mit
+      - sortieren nach eigenschaft mit custom compare() https://stackoverflow.com/a/55856231
+      - [ ] name
+      - [ ] (zutaten) tags
+      - [ ] freitext zum anzeigen wenn man auf das gericht klickt
+        - aus liste auswählen?
+        - kann zb auch `vegetarisch` sein
+      - [ ] wann das letzte / nächste mal
   - kategorien (hauptspeise, dessert ... suppe, backwaren)
   - medien feld für bilder / pdf / anhänge
   - beim speichern warnen wenn keine kategorie angegeben wurde (otional)
-- Liste mit
-  - Name
-  - zutaten Tags
-  - wann das letzte / nächste mal
 
 Alle Gerichte nach Kategorie
 - zb um zu gucken in welcher kategorie man noch gerichte suchen müsste
-- oder oum die frage nach "hast du mal ein gutes brot" zu beantworten
-
-Hinzufügen Dialog
-- Liste wie bei den gerichten
-- suche/filter nach
-  - name (suche)
-  - kategorien (filtert die zutaten tags)
-  - zutaten tags (1x tippen = und)
+- oder um die frage nach "hast du mal ein gutes brot" zu beantworten
+- evtl mit https://flutterawesome.com/a-flutter-listview-in-which-items-can-be-grouped-into-sections/
 
 datenmodell:
 tage = tage seit unix epoch
