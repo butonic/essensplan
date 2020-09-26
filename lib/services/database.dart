@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'DishModel.dart';
+import '../model/dish.dart';
 
 class DBProvider {
   DBProvider._();
@@ -20,6 +20,14 @@ class DBProvider {
     _database = await initDB();
     return _database;
   }
+
+// dishes (id, name)
+// days_dishes (day, ordering, dishid, note)
+// categories (id, name)
+// categories_dishes (dishid, categoryid)
+// tags (id, name)
+// tags_dishes (dishid, tagid)
+
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -39,10 +47,36 @@ class DBProvider {
           "FOREIGN KEY (dish)"
           "  REFERENCES dishes (id)"
           ")");
+      await db.execute("CREATE TABLE categories ("
+          "id INTEGER PRIMARY KEY,"
+          "name TEXT"
+          ")");
+      await db.execute("CREATE TABLE categories_dishes ("
+          "cid INTEGER,"
+          "did INTEGER,"
+          "FOREIGN KEY (cid)"
+          "  REFERENCES categories (id)"
+          "),"
+          "FOREIGN KEY (did)"
+          "  REFERENCES dishes (id)"
+          ")");
+      await db.execute("CREATE TABLE tags ("
+          "id INTEGER PRIMARY KEY,"
+          "name TEXT"
+          ")");
+      await db.execute("CREATE TABLE tags_dishes ("
+          "tid INTEGER,"
+          "did INTEGER,"
+          "FOREIGN KEY (tid)"
+          "  REFERENCES tags (id)"
+          "),"
+          "FOREIGN KEY (did)"
+          "  REFERENCES dishes (id)"
+          ")");
     });
   }
 
-  newDish(Dish newDish) async {
+  Future<int> newDish(Dish newDish) async {
     final db = await database;
     var raw = await db.rawInsert(
         "INSERT INTO dishes (name)"
@@ -67,8 +101,24 @@ class DBProvider {
     return res;
   }
 
-  getDish(int id) async {
+  Future<Dish> getDish(int id) async {
     final db = await database;
+/*
+    var res = await db.rawQuery(
+      "SELECT"
+      " d.day AS day,"
+      " .ordering AS ordering,"
+      " l.note AS note,"
+      " d.id AS dish,"
+      " d.name AS name "
+      "FROM dishes d"
+      " LEFT JOIN categories_dishes cd ON d.id = cd.did "
+      " LEFT JOIN categories c ON cd.cid = c.id "
+      "WHERE d.id=",
+      [id]);
+    List<Dish> list =
+        res.isNotEmpty ? res.map((c) => Dish.fromMap(c)).toList() : [];
+*/
     var res = await db.query("dishes", where: "id = ?", whereArgs: [id]);
     return res.isNotEmpty ? Dish.fromMap(res.first) : null;
   }
