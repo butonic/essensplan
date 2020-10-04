@@ -99,13 +99,13 @@ class _PlanPageState extends State<PlanPage> {
     // TODO dish zurückgeben https://flutter.dev/docs/cookbook/navigation/returning-data#interactive-example
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
-    //final result = await Navigator.pushNamed<Dish>(context, '/dishes');
-     final result = await Navigator.push(
-      context,
-      MaterialPageRoute<Dish>(builder: (context) => DishesPage()),
-    );
+    final result = await Navigator.pushNamed(context, '/dishes');
+    //final result = await Navigator.push(
+    //  context,
+    //  MaterialPageRoute<Dish>(builder: (context) => DishesPage()),
+    //);
 
-    if (result != null) {
+    if (result is Dish) {
       setState(() {
         DBProvider.db.addDishToDay(day, 0, result.id, null);
       });

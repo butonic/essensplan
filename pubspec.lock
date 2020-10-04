@@ -83,6 +83,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.0"
+  flutter_tags:
+    dependency: "direct main"
+    description:
+      path: "../flutter_tags"
+      relative: true
+    source: path
+    version: "0.4.9"
   flutter_test:
     dependency: "direct dev"
     description: flutter

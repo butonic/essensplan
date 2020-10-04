@@ -33,6 +33,11 @@ dependencies:
   scrollable_positioned_list:
   english_words: ^3.1.0
   flutter_multiselect: 0.5.0
+  flutter_tags:
+    path: ../flutter_tags
+    # git:
+    #   url: https://github.com/butonic/flutter_tags
+    #   ref: case-insensitive-suggestions
 
 dev_dependencies:
   flutter_test:

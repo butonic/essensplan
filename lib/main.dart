@@ -31,13 +31,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ober Menu Planner',
-      //initialRoute: '/plan',
-      //routes: {
-      //  '/plan': (context) => PlanPage(),
-      //  '/dishes': (context) => DishesPage(),
-      //  '/dishes/edit': (context) => EditDishPage(),
-      //},
-      home: PlanPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => PlanPage(),
+        '/dishes': (context) => DishesPage(),
+        '/dishes/edit': (context) => EditDishPage(),
+      },
+      //home: PlanPage(),
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -57,4 +57,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

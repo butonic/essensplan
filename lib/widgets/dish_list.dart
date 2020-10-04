@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../model/dish.dart';
+import '../services/database.dart';
+
+typedef DishTapCallback = void Function(BuildContext context, Dish dish);
+typedef DishLongPressCallback = void Function(BuildContext context, Dish dish);
 
 class DishList extends StatelessWidget {
   final List<Dish> dishes;
 
-  DishList({Key key, this.dishes}) : super(key: key);
+  /// Called when the user taps a dish.
+  final DishTapCallback onTap;
+
+  /// Called when the user long-presses a dish.
+  final DishLongPressCallback onLongPress;
+
+  DishList({Key key, this.dishes, this.onLongPress, this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +26,11 @@ class DishList extends StatelessWidget {
           return new Card(
             child: new InkWell(
               onTap: () {
-                Navigator.pop<Dish>(context, dishes[index]);
+                this.onTap(context, dishes[index]);
+                // Navigator.pop<Dish>(context, dishes[index]);
+              },
+              onLongPress: () {
+                this.onLongPress(context, dishes[index]);
               },
               child: new Center(
                 child: new Column(

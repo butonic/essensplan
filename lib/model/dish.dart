@@ -14,11 +14,15 @@ class Dish {
   int id;
   String name;
   String note;
+  List<String> categories = <String>[];
+  List<String> tags = <String>[];
 
   Dish({
     this.id,
     this.name,
     this.note,
+    categories = const <String>[],
+    tags = const <String>[],
   });
 
   factory Dish.fromMap(Map<String, dynamic> json) => new Dish(
