@@ -27,7 +27,6 @@ class DishList extends StatelessWidget {
             child: new InkWell(
               onTap: () {
                 this.onTap(context, dishes[index]);
-                // Navigator.pop<Dish>(context, dishes[index]);
               },
               onLongPress: () {
                 this.onLongPress(context, dishes[index]);

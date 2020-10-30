@@ -212,6 +212,26 @@ class DBProvider {
     return list;
   }
 
+  Future<List<Dish>> getDishes(
+      String q, List<int> categories /* TODO tags */) async {
+    final db = await database;
+    var qs = "SELECT"
+        " d.id AS id"
+        " d.name AS name "
+        " d.note AS note "
+        "FROM dishes d"
+        " LEFT JOIN categories_dishes cd ON cd.cid = d.id"
+        " WHERE UPPER(d.name) LIKE ?";
+    if (categories.length > 0) {
+      qs += " AND cd.did IN (${categories.join(', ')})";
+    }
+    // TODO search note as well
+    var res = await db.rawQuery(qs, [(q + '%').toUpperCase()]);
+    List<Dish> list =
+        res.isNotEmpty ? res.map((c) => Dish.fromMap(c)).toList() : [];
+    return list;
+  }
+
   Future<List<Category>> getAllCategories() async {
     final db = await database;
     var res = await db.query("categories");

@@ -28,6 +28,7 @@ class _DishesPageState extends State<DishesPage> {
 
   List<Dish> allDishes;
   List<Category> allCategories;
+  List<Category> selectedCategories;
   List<String> allTags;
   List<Dish> filteredDishes;
 
@@ -51,6 +52,7 @@ class _DishesPageState extends State<DishesPage> {
         allCategories = categories;
       });
     });
+    selectedCategories = new List<Category>();
     // TODO load all tags
   }
 
@@ -94,7 +96,7 @@ class _DishesPageState extends State<DishesPage> {
   void _clearSearchQuery() {
     setState(() {
       _searchQuery.clear();
-      updateSearchQuery('');
+      updateSearchQuery('', allCategories);
     });
   }
 
@@ -138,7 +140,9 @@ class _DishesPageState extends State<DishesPage> {
                   hintStyle: const TextStyle(color: Colors.black26),
                 ),
                 style: const TextStyle(color: Colors.black, fontSize: 16.0),
-                onChanged: updateSearchQuery,
+                onChanged: (String q) {
+                  updateSearchQuery(q, selectedCategories);
+                },
               ),
             ),
             new IconButton(
@@ -165,23 +169,25 @@ class _DishesPageState extends State<DishesPage> {
           textField: 'name',
           valueField: 'id',
           filterable: true,
-          //required: true,
-          value: null,
           onSaved: (value) {
             print('The value is $value');
+            updateSearchQuery(query, value);
           }),
     );
   }
 
-  void updateSearchQuery(String newQuery) {
+  void updateSearchQuery(String newQuery, List<Category> categories) async {
     filteredDishes.clear();
     if (newQuery.length > 0) {
-      Set<Dish> set = Set.from(allDishes);
-      set.forEach((element) => filterList(element, newQuery));
+      List<int> cids = categories.map((e) => e.id).toList();
+      await DBProvider.db.getDishes(newQuery, cids).then((List<Dish> dishes) {
+        filteredDishes.addAll(dishes);
+      });
     }
     if (newQuery.isEmpty) {
       filteredDishes.addAll(allDishes);
     }
+    query = newQuery;
     setState(() {});
   }
 
