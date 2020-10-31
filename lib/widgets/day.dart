@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../model/day.dart';
 import '../model/dish.dart';
-import '../services/database.dart';
+import 'package:hive/hive.dart';
 
 import 'dish_or_note.dart';
 
@@ -26,24 +27,27 @@ class _DayWidgetState extends State<DayWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new FutureBuilder<List<Dish>>(
-        future: DBProvider.db.getDay(day),
-        builder: (BuildContext context, AsyncSnapshot<List<Dish>> snapshot) {
-          if (snapshot.hasData) {
-            return renderDishes(snapshot.data);
-          } else {
-            return new Container(
-              alignment: AlignmentDirectional.center,
-              child: new CircularProgressIndicator(),
-            );
-          }
-        });
+    Day d = Hive.box<Day>('dayBox').get(day);
+    if (d != null) {
+      return renderDishes(d);
+    } else {
+      return new Container(
+        alignment: AlignmentDirectional.center,
+        child: Text(
+          'nichts geplant',
+          style: TextStyle(
+            color: Colors.grey[300],
+          ),
+        ),
+      );
+    }
   }
 
-  Widget renderDishes(List<Dish> dishes) {
+  Widget renderDishes(Day d) {
     // TODO swipe left zum löschen?
-    if (dishes.length == 0) {
-      return Text('nichts geplant',
+    if (d.entries.isEmpty) {
+      return Text(
+        'nichts geplant',
         style: TextStyle(
           color: Colors.grey[300],
         ),
@@ -67,9 +71,9 @@ class _DayWidgetState extends State<DayWidget> {
       */
     }
     return Column(
-      children: List.generate(dishes.length, (i) {
-        return DishOrNoteWidget(dish: dishes[i]);
-      }),
+      children: d.entries.map((dish) {
+        return DishOrNoteWidget(dish: dish);
+      }).toList(),
 //        Row(
 //        mainAxisSize: MainAxisSize.min,
 //        children: <Widget>[

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../model/dish.dart';
-import '../services/database.dart';
 
 typedef DishTapCallback = void Function(BuildContext context, Dish dish);
 typedef DishLongPressCallback = void Function(BuildContext context, Dish dish);

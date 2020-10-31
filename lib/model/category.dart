@@ -1,34 +1,13 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
 
-Category categoryFromJson(String str) {
-  final jsonData = json.decode(str);
-  return Category.fromMap(jsonData);
-}
+part 'category.g.dart';
 
-String categoryToJson(Category data) {
-  final dyn = data.toMap();
-  return json.encode(dyn);
-}
-
-class Category {
-  int id;
+@HiveType(typeId: 1)
+class Category extends HiveObject {
+  @HiveField(0)
   String name;
 
   Category({
-    this.id,
     this.name,
   });
-
-  factory Category.fromMap(Map<String, dynamic> json) => new Category(
-        id: json["id"],
-        name: json["name"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "name": name,
-      };
-  String operator [](String id) {
-    return name;
-  }
 }

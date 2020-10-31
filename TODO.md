@@ -57,3 +57,9 @@ datenmodell:
 tage = tage seit unix epoch
 dish (int id PK, text name, ... )
 day_dishes (int day, int dish_id FK dish.id, order int)
+
+# HIVE
+- [x] modell umstellen
+- [ ] kategorien bearbeiten
+- [ ] tags bearbeiten
+- [ ] dish / notiz von tag entfernen by swipe

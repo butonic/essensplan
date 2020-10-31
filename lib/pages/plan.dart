@@ -4,10 +4,9 @@ import 'package:english_words/english_words.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../model/dish.dart';
-import '../services/database.dart';
+import '../model/day.dart';
 import '../widgets/day.dart';
-
-import 'dishes.dart';
+import 'package:hive/hive.dart';
 
 class PlanPage extends StatefulWidget {
   PlanPage({Key key}) : super(key: key);
@@ -17,8 +16,6 @@ class PlanPage extends StatefulWidget {
 }
 
 class _PlanPageState extends State<PlanPage> {
-  final Set<WordPair> _saved = Set<WordPair>();
-  final _biggerFont = const TextStyle(fontSize: 18.0);
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
@@ -83,8 +80,19 @@ class _PlanPageState extends State<PlanPage> {
               onPressed: () {
                 // TODO add editable text field
                 setState(() {
-                  DBProvider.db
-                      .addDishToDay(day, 0, null, "something on this day");
+                  var dayBox = Hive.box<Day>('dayBox');
+                  var dm = dayBox.get(day);
+                  if (dm == null) {
+                    dm = new Day();
+                    dayBox.put(day, dm);
+                  }
+                  if (dm.entries == null) {
+                    dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
+                  }
+                  dm.entries.add(new Dish(note: "something on this day"));
+                  dm.save();
+                  // TODO DBProvider.db
+                  //.addDishToDay(day, 0, null, "something on this day");
                 });
               },
             ),
@@ -107,7 +115,18 @@ class _PlanPageState extends State<PlanPage> {
 
     if (result is Dish) {
       setState(() {
-        DBProvider.db.addDishToDay(day, 0, result.id, null);
+        var dayBox = Hive.box<Day>('dayBox');
+        var dm = dayBox.get(day);
+        if (dm == null) {
+          dm = new Day();
+          dayBox.put(day, dm);
+        }
+        if (dm.entries == null) {
+          dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
+        }
+        dm.entries.add(result);
+        dm.save();
+        // TODO DBProvider.db.addDishToDay(day, 0, result.id, null);
       });
     }
   }

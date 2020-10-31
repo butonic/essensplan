@@ -5,8 +5,10 @@ import 'package:flutter_multiselect/flutter_multiselect.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
+import '../model/tag.dart';
 import '../widgets/dish_list.dart';
-import '../services/database.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'edit_dish.dart';
 
@@ -26,34 +28,21 @@ class _DishesPageState extends State<DishesPage> {
 
   TextEditingController _searchQuery;
 
-  List<Dish> allDishes;
-  List<Category> allCategories;
   List<Category> selectedCategories;
-  List<String> allTags;
   List<Dish> filteredDishes;
 
   //getting data from the db
   @override
   void initState() {
     super.initState();
-    _searchQuery = new TextEditingController();
     // load all dishes
-    DBProvider.db.getAllDishes().then((List<Dish> dishes) {
-      setState(() {
-        allDishes = dishes;
-      });
+    filteredDishes = new List<Dish>();
+    setState(() {
+      filteredDishes.addAll(Hive.box<Dish>('dishBox').values);
+    });
 
-      filteredDishes = new List<Dish>();
-      filteredDishes.addAll(allDishes);
-    });
-    // load all categories
-    DBProvider.db.getAllCategories().then((List<Category> categories) {
-      setState(() {
-        allCategories = categories;
-      });
-    });
+    _searchQuery = new TextEditingController();
     selectedCategories = new List<Category>();
-    // TODO load all tags
   }
 
   Widget build(BuildContext context) {
@@ -74,7 +63,7 @@ class _DishesPageState extends State<DishesPage> {
                     onTap: _selectedDish,
                     onLongPress: _editDish,
                   )
-                : allDishes == null
+                : Hive.box<Dish>('dishBox').values == null
                     ? new Center(child: new CircularProgressIndicator())
                     : new Center(
                         child: new Text("Kein Treffer"),
@@ -96,7 +85,8 @@ class _DishesPageState extends State<DishesPage> {
   void _clearSearchQuery() {
     setState(() {
       _searchQuery.clear();
-      updateSearchQuery('', allCategories);
+      updateSearchQuery(
+          '', selectedCategories); // TODO reset selected categories?
     });
   }
 
@@ -165,7 +155,7 @@ class _DishesPageState extends State<DishesPage> {
           },
           errorText: 'Berühren um ein oder mehrere Kategorien zu wählen ...',
           hintText: '',
-          dataSource: allCategories,
+          dataSource: Hive.box<Category>('categoryBox').values.toList(),
           textField: 'name',
           valueField: 'id',
           filterable: true,
@@ -179,13 +169,13 @@ class _DishesPageState extends State<DishesPage> {
   void updateSearchQuery(String newQuery, List<Category> categories) async {
     filteredDishes.clear();
     if (newQuery.length > 0) {
-      List<int> cids = categories.map((e) => e.id).toList();
-      await DBProvider.db.getDishes(newQuery, cids).then((List<Dish> dishes) {
-        filteredDishes.addAll(dishes);
-      });
+      filteredDishes.addAll(Hive.box<Dish>('dishBox')
+          .values
+          .where((element) => element.categories.contains(categories))
+          .where((element) => element.name.contains(newQuery)));
     }
     if (newQuery.isEmpty) {
-      filteredDishes.addAll(allDishes);
+      filteredDishes.addAll(Hive.box<Dish>('dishBox').values);
     }
     query = newQuery;
     setState(() {});
@@ -205,36 +195,37 @@ class _DishesPageState extends State<DishesPage> {
   }
 
   void _newDish(BuildContext context) async {
+    var d = new Dish();
+    d.categories = HiveList(Hive.box<Category>('categoryBox'));
+    d.tags = HiveList(Hive.box<Tag>('tagBox'));
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-        arguments: EditDishArguments(new Dish(), allCategories));
-    //final newDish = await Navigator.push(
-    //  context,
-    //  MaterialPageRoute<Dish>(builder: (context) => EditDishPage()),
-    // );
+        arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
 
     if (editedArgs is EditDishArguments) {
-      editedArgs.dish.id = await DBProvider.db.newDish(editedArgs.dish);
-      allDishes.add(editedArgs.dish);
-      await DBProvider.db.getAllCategories().then((List<Category> categories) {
-        allCategories = categories;
-      });
+      // TODO needs a day box with an ordered list of dishes/notes
+      Hive.box<Dish>('dishBox').add(editedArgs.dish);
+      //TODO update categories?
+      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
+      //  allCategories = categories;
+      //});
       _clearSearchQuery();
     }
   }
 
   void _editDish(BuildContext context, Dish dish) async {
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-        arguments: EditDishArguments(dish, allCategories));
+        arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
     //final editedDish = await Navigator.push(
     //  context,
     //  MaterialPageRoute<Dish>(builder: (context) => EditDishPage()),
     //);
 
     if (editedArgs is EditDishArguments) {
-      await DBProvider.db.updateDish(editedArgs.dish);
-      await DBProvider.db.getAllCategories().then((List<Category> categories) {
-        allCategories = categories;
-      });
+      editedArgs.dish.save();
+      //TODO update categories?
+      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
+      //  allCategories = categories;
+      // });
       _clearSearchQuery();
     }
   }

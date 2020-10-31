@@ -1,39 +1,25 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'category.dart';
+import 'tag.dart';
 
-Dish dishFromJson(String str) {
-  final jsonData = json.decode(str);
-  return Dish.fromMap(jsonData);
-}
+part 'dish.g.dart';
 
-String dishToJson(Dish data) {
-  final dyn = data.toMap();
-  return json.encode(dyn);
-}
-
-class Dish {
-  int id;
+@HiveType(typeId: 0)
+class Dish extends HiveObject {
+  @HiveField(0)
   String name;
+
+  @HiveField(1)
   String note;
-  List<String> categories = <String>[];
-  List<String> tags = <String>[];
+
+  @HiveField(2)
+  HiveList<Category> categories;
+
+  @HiveField(3)
+  HiveList<Tag> tags;
 
   Dish({
-    this.id,
     this.name,
     this.note,
-    categories = const <String>[],
-    tags = const <String>[],
   });
-
-  factory Dish.fromMap(Map<String, dynamic> json) => new Dish(
-        id: json["id"],
-        name: json["name"],
-        note: json["note"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "name": name,
-        "note": note,
-      };
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:hive/hive.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
@@ -17,7 +18,7 @@ class EditDishPage extends StatelessWidget {
 
 class EditDishArguments {
   final Dish dish;
-  final List<Category> categories;
+  final Box<Category> categories;
 
   EditDishArguments(this.dish, this.categories);
 }
@@ -57,13 +58,14 @@ class EditDishFormState extends State<EditDishForm> {
               //lowerCase: true, // lowercases the resulting tag
               //textStyle: TextStyle(fontSize: _fontSize),
               constraintSuggestion: false,
-              suggestions: args.categories.map<String>((e) => e.name).toList(),
+              suggestions:
+                  args.categories.values.map<String>((e) => e.name).toList(),
               //width: double.infinity, padding: EdgeInsets.symmetric(horizontal: 10),
               onSubmitted: (String str) {
                 // Add item to the data source.
                 setState(() {
                   // required
-                  args.dish.categories.add(str);
+                  args.dish.categories.add(new Category(name: str));
                 });
               },
             ),
@@ -75,9 +77,9 @@ class EditDishFormState extends State<EditDishForm> {
                 // Each ItemTags must contain a Key. Keys allow Flutter to
                 // uniquely identify widgets.
                 //key: Key(index.toString()),
-                key: Key(item),
+                key: Key(item.name),
                 index: index, // required
-                title: item,
+                title: item.name,
                 pressEnabled: false,
                 removeButton: ItemTagsRemoveButton(
                   onRemoved: () {

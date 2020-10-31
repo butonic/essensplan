@@ -4,11 +4,33 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'pages/plan.dart';
 import 'pages/dishes.dart';
 import 'pages/edit_dish.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'model/category.dart';
+import 'model/day.dart';
+import 'model/dish.dart';
+import 'model/tag.dart';
 
-void main() {
+Box<Category> _categoryBox;
+Box<Day> _dayBox;
+Box<Dish> _dishBox;
+Box<Tag> _tagBox;
+
+void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
   };
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(CategoryAdapter());
+  Hive.registerAdapter(DayAdapter());
+  Hive.registerAdapter(DishAdapter());
+  Hive.registerAdapter(TagAdapter());
+
+  _categoryBox = await Hive.openBox<Category>('categoryBox');
+  _dayBox = await Hive.openBox<Day>('dayBox');
+  _dishBox = await Hive.openBox<Dish>('dishBox');
+  _tagBox = await Hive.openBox<Tag>('tagBox');
   initializeDateFormatting('de_DE', null).then((_) => runApp(MyApp()));
   Intl.defaultLocale = "de_DE";
 }
