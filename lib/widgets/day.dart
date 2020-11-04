@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../model/day.dart';
-import '../model/dish.dart';
 import 'package:hive/hive.dart';
 
 import 'dish_or_note.dart';
@@ -32,73 +31,19 @@ class _DayWidgetState extends State<DayWidget> {
       return renderDishes(d);
     } else {
       return new Container(
-        alignment: AlignmentDirectional.center,
-        child: Text(
-          'nichts geplant',
-          style: TextStyle(
-            color: Colors.grey[300],
-          ),
-        ),
-      );
+          alignment: AlignmentDirectional.center, child: Column());
     }
   }
 
   Widget renderDishes(Day d) {
     // TODO swipe left zum löschen?
     if (d.entries.isEmpty) {
-      return Text(
-        'nichts geplant',
-        style: TextStyle(
-          color: Colors.grey[300],
-        ),
-      );
-      /*return FlatButton(
-        //onPressed: toggleEditMode,
-        child: Row(
-            children: <Widget>[
-              Text("Empty"), // TODO show nothing
-              Icon(Icons.edit)
-            ],
-          ),
-
-            onPressed: () {
-              setState(() {
-                DBProvider.db.addDishToDay(day, 0, null, "something on this day");
-               // _toggleEditMode();
-              });
-            },
-      );
-      */
+      return Column();
     }
     return Column(
       children: d.entries.map((dish) {
-        return DishOrNoteWidget(dish: dish);
+        return DishOrNoteWidget(day: d, dish: dish);
       }).toList(),
-//        Row(
-//        mainAxisSize: MainAxisSize.min,
-//        children: <Widget>[
-//          RaisedButton(
-//            child: Text('➕'),
-//            onPressed: () {
-//              setState(() {
-//                DBProvider.db.addDishToDay(day, 0, 0, "something on this day");
-//              });
-//            },
-//          ),
-//          RaisedButton(
-//            child: Text('✍'),
-//            onPressed: toggleEditMode
-//            /*
-//            onPressed: () {
-//              setState(() {
-//                DBProvider.db.addDishToDay(_day, 0, null, "something on this day");
-//                _toggleEditMode();
-//              });
-//            },
-//            */
-//          ),
-//        ],
-//      )
     );
   }
 }

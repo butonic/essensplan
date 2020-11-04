@@ -7,7 +7,14 @@ class Category extends HiveObject {
   @HiveField(0)
   String name;
 
+  @HiveField(1)
+  String id;
+
   Category({
     this.name,
+    this.id,
   });
+  String operator [](String id) {
+    return name;
+  }
 }

@@ -60,6 +60,7 @@ day_dishes (int day, int dish_id FK dish.id, order int)
 
 # HIVE
 - [x] modell umstellen
-- [ ] kategorien bearbeiten
+- [x] dish / notiz von tag entfernen by swipe
+- [x] kategorien bearbeiten
+- [ ] notiz hinzufügen
 - [ ] tags bearbeiten
-- [ ] dish / notiz von tag entfernen by swipe

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
@@ -62,10 +63,17 @@ class EditDishFormState extends State<EditDishForm> {
                   args.categories.values.map<String>((e) => e.name).toList(),
               //width: double.infinity, padding: EdgeInsets.symmetric(horizontal: 10),
               onSubmitted: (String str) {
+                var cat = args.categories.values.firstWhere(
+                    ((e) => e.name == str),
+                    orElse: () => new Category(name: str, id: Uuid().v4()));
                 // Add item to the data source.
                 setState(() {
                   // required
-                  args.dish.categories.add(new Category(name: str));
+                  // we need to add the category to the category box before we can reference it
+                  // TODO automatically remove category when canceling editing?
+                  args.categories.put(cat.id, cat).then((value) {
+                    args.dish.categories.add(cat);
+                  });
                 });
               },
             ),
@@ -76,8 +84,8 @@ class EditDishFormState extends State<EditDishForm> {
               return ItemTags(
                 // Each ItemTags must contain a Key. Keys allow Flutter to
                 // uniquely identify widgets.
-                //key: Key(index.toString()),
-                key: Key(item.name),
+                key: Key(index.toString()),
+                //key: Key(item.name),
                 index: index, // required
                 title: item.name,
                 pressEnabled: false,

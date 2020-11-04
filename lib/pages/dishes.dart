@@ -22,7 +22,7 @@ class DishesPage extends StatefulWidget {
 }
 
 class _DishesPageState extends State<DishesPage> {
-  static final GlobalKey<ScaffoldState> scaffoldKey =
+  static final GlobalKey<ScaffoldState> _dishesKey =
       new GlobalKey<ScaffoldState>();
   String query = '';
 
@@ -47,29 +47,36 @@ class _DishesPageState extends State<DishesPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      appBar: new AppBar(
-        title: _buildTitle(context),
-      ),
-      body: new Column(
-        children: <Widget>[
-          _buildSearchField(),
-          _buildCategoryDropdown(),
-          new Text('Tags'),
-          Expanded(
-            child: filteredDishes != null && filteredDishes.length > 0
-                ? new DishList(
-                    dishes: filteredDishes,
-                    onTap: _selectedDish,
-                    onLongPress: _editDish,
-                  )
-                : Hive.box<Dish>('dishBox').values == null
-                    ? new Center(child: new CircularProgressIndicator())
-                    : new Center(
-                        child: new Text("Kein Treffer"),
-                      ),
-          ),
-        ],
+      appBar: new AppBar(title: _buildTitle(context), actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.developer_mode),
+          onPressed: () {
+            Hive.box<Category>('categoryBox').clear();
+          },
+        ),
+      ]),
+      body: new Form(
+        key: _dishesKey,
+        child: new Column(
+          children: <Widget>[
+            _buildSearchField(),
+            _buildCategoryDropdown(),
+            new Text('Tags'),
+            Expanded(
+              child: filteredDishes != null && filteredDishes.length > 0
+                  ? new DishList(
+                      dishes: filteredDishes,
+                      onTap: _selectedDish,
+                      onLongPress: _editDish,
+                    )
+                  : Hive.box<Dish>('dishBox').values == null
+                      ? new Center(child: new CircularProgressIndicator())
+                      : new Center(
+                          child: new Text("Kein Treffer"),
+                        ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -96,7 +103,6 @@ class _DishesPageState extends State<DishesPage> {
         Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
 
     return new InkWell(
-      onTap: () => scaffoldKey.currentState.openDrawer(),
       child: new Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: new Column(
@@ -155,13 +161,30 @@ class _DishesPageState extends State<DishesPage> {
           },
           errorText: 'Berühren um ein oder mehrere Kategorien zu wählen ...',
           hintText: '',
-          dataSource: Hive.box<Category>('categoryBox').values.toList(),
-          textField: 'name',
-          valueField: 'id',
+          dataSource: Hive.box<Category>('categoryBox')
+              .values
+              .map((category) => {
+                    "category": category,
+                    "displayname": category.name,
+                  })
+              .toList(),
+          textField: 'displayname',
+          valueField: 'category',
           filterable: true,
+          change: (value) {
+            // cast dynamic to List<Category>
+            var categories = (value as List)
+                ?.map((dynamic item) => item as Category)
+                ?.toList();
+            updateSearchQuery(query, categories);
+          },
           onSaved: (value) {
-            print('The value is $value');
-            updateSearchQuery(query, value);
+            // cast dynamic to List<Category>
+            var categories = (value as List)
+                .whereType<Category>()
+                ?.map((dynamic item) => item as Category)
+                ?.toList();
+            updateSearchQuery(query, categories);
           }),
     );
   }
@@ -171,12 +194,18 @@ class _DishesPageState extends State<DishesPage> {
     if (newQuery.length > 0) {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
-          .where((element) => element.categories.contains(categories))
-          .where((element) => element.name.contains(newQuery)));
+          .where((e) => e.name.contains(newQuery)));
     }
     if (newQuery.isEmpty) {
       filteredDishes.addAll(Hive.box<Dish>('dishBox').values);
     }
+    selectedCategories.clear();
+    if (categories != null && categories.length > 0) {
+      filteredDishes
+          .removeWhere((e) => !e.categories.toSet().containsAll(categories));
+      selectedCategories.addAll(categories);
+    }
+
     query = newQuery;
     setState(() {});
   }
@@ -196,13 +225,12 @@ class _DishesPageState extends State<DishesPage> {
 
   void _newDish(BuildContext context) async {
     var d = new Dish();
-    d.categories = HiveList(Hive.box<Category>('categoryBox'));
-    d.tags = HiveList(Hive.box<Tag>('tagBox'));
+    d.categories = new HiveList(Hive.box<Category>('categoryBox'));
+    d.tags = new HiveList(Hive.box<Tag>('tagBox'));
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
         arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
 
     if (editedArgs is EditDishArguments) {
-      // TODO needs a day box with an ordered list of dishes/notes
       Hive.box<Dish>('dishBox').add(editedArgs.dish);
       //TODO update categories?
       //await DBProvider.db.getAllCategories().then((List<Category> categories) {

@@ -39,6 +39,7 @@ dependencies:
     #   ref: case-insensitive-suggestions
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
+  uuid: 2.2.2
 
 dev_dependencies:
   flutter_test:
