@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../model/day.dart';
 import '../model/dish.dart';
+import '../model/category.dart';
+import '../pages/edit_dish.dart';
+import 'package:hive/hive.dart';
 
 class DishOrNoteWidget extends StatefulWidget {
   final Day _day;
@@ -52,6 +55,8 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
           FocusScopeNode currentFocus = FocusScope.of(context);
           if (!currentFocus.hasPrimaryFocus) {
             currentFocus.unfocus();
+          } else {
+            _editDish(context, _dish);
           }
         },
       );
@@ -64,11 +69,10 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
         autofocus: false,
         controller: controller,
         decoration: InputDecoration(
-          isDense: true,
-          contentPadding: const EdgeInsets.all(8.0),
-          border: InputBorder.none,
-          //hintText: 'Enter a Note'
-        ),
+            isDense: true,
+            contentPadding: const EdgeInsets.all(8.0),
+            border: InputBorder.none,
+            hintText: 'Neue Notiz'),
         onChanged: (value) {
           if (_dish.note != value) {
             _dish.note = value;
@@ -93,5 +97,19 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
           width: double.infinity,
           child: text,
         ));
+  }
+
+  // this should be a view... maybe a popup
+  void _editDish(BuildContext context, Dish dish) async {
+    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
+        arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
+
+    if (editedArgs is EditDishArguments) {
+      editedArgs.dish.save();
+      //TODO update categories?
+      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
+      //  allCategories = categories;
+      // });
+    }
   }
 }

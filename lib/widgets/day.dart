@@ -20,6 +20,7 @@ class _DayWidgetState extends State<DayWidget> {
   _DayWidgetState({
     int day,
   }) : this.day = day;
+  // TODO selected flag, render differently when selected
 
   bool inEditMode = false;
   final epoch = new DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
@@ -36,7 +37,6 @@ class _DayWidgetState extends State<DayWidget> {
   }
 
   Widget renderDishes(Day d) {
-    // TODO swipe left zum löschen?
     if (d.entries.isEmpty) {
       return Column();
     }

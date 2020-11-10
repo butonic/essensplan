@@ -77,9 +77,9 @@ class EditDishFormState extends State<EditDishForm> {
                 });
               },
             ),
-            itemCount: args.dish.categories.length, // required
+            itemCount: args.categories.length, // required
             itemBuilder: (int index) {
-              final item = args.dish.categories[index];
+              final c = args.categories.getAt(index);
 
               return ItemTags(
                 // Each ItemTags must contain a Key. Keys allow Flutter to
@@ -87,19 +87,25 @@ class EditDishFormState extends State<EditDishForm> {
                 key: Key(index.toString()),
                 //key: Key(item.name),
                 index: index, // required
-                title: item.name,
-                pressEnabled: false,
-                removeButton: ItemTagsRemoveButton(
-                  onRemoved: () {
-                    // Remove the item from the data source.
-                    setState(() {
-                      // required
-                      args.dish.categories.removeAt(index);
-                    });
-                    //required
-                    return true;
-                  },
-                ),
+                title: c.name,
+                // true if dish has this category
+                active: args.dish.categories.contains(c),
+                customData: c,
+                onPressed: (Item item) {
+                  args.dish.categories.add(item.customData);
+                },
+
+                //removeButton: ItemTagsRemoveButton(
+                //  onRemoved: () {
+                //    // Remove the item from the data source.
+                //    setState(() {
+                //      // required
+                //      args.categories.removeAt(index);
+                //    });
+                //    //required
+                //    return true;
+                //  },
+                //),
               );
             },
           ),

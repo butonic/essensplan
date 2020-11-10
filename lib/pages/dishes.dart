@@ -8,7 +8,6 @@ import '../model/category.dart';
 import '../model/tag.dart';
 import '../widgets/dish_list.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'edit_dish.dart';
 
@@ -38,7 +37,9 @@ class _DishesPageState extends State<DishesPage> {
     // load all dishes
     filteredDishes = new List<Dish>();
     setState(() {
-      filteredDishes.addAll(Hive.box<Dish>('dishBox').values);
+      filteredDishes.addAll(Hive.box<Dish>('dishBox')
+          .values
+          .where((element) => element.name != null));
     });
 
     _searchQuery = new TextEditingController();
@@ -48,12 +49,12 @@ class _DishesPageState extends State<DishesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(title: _buildTitle(context), actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.developer_mode),
-          onPressed: () {
-            Hive.box<Category>('categoryBox').clear();
-          },
-        ),
+        //IconButton(
+        //  icon: Icon(Icons.developer_mode),
+        //  onPressed: () {
+        //     Hive.box<Category>('categoryBox').clear();
+        //  },
+        //),
       ]),
       body: new Form(
         key: _dishesKey,
@@ -191,14 +192,15 @@ class _DishesPageState extends State<DishesPage> {
 
   void updateSearchQuery(String newQuery, List<Category> categories) async {
     filteredDishes.clear();
+    // 1. filter notes
+    var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
+
     if (newQuery.length > 0) {
-      filteredDishes.addAll(Hive.box<Dish>('dishBox')
-          .values
-          .where((e) => e.name.contains(newQuery)));
+      dishes = dishes.where((e) => e.name.contains(newQuery));
     }
-    if (newQuery.isEmpty) {
-      filteredDishes.addAll(Hive.box<Dish>('dishBox').values);
-    }
+    filteredDishes.addAll(dishes);
+
+    // 3. filter categories TODO by or, not and - needs to use where an add all dishes that have one of the selected categories
     selectedCategories.clear();
     if (categories != null && categories.length > 0) {
       filteredDishes
