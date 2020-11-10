@@ -4,22 +4,24 @@ import '../model/day.dart';
 import 'package:hive/hive.dart';
 
 import 'dish_or_note.dart';
+import '../callbacks/dish.dart';
 
 class DayWidget extends StatefulWidget {
-  final int _day;
+  final int day;
+
+  /// Called when the user taps a dish.
+  final DishTapCallback onTap;
   DayWidget({
     int day,
-  }) : this._day = day;
+    DishTapCallback onTap,
+  })  : this.day = day,
+        this.onTap = onTap;
 
   @override
-  _DayWidgetState createState() => _DayWidgetState(day: _day);
+  _DayWidgetState createState() => _DayWidgetState();
 }
 
 class _DayWidgetState extends State<DayWidget> {
-  final int day;
-  _DayWidgetState({
-    int day,
-  }) : this.day = day;
   // TODO selected flag, render differently when selected
 
   bool inEditMode = false;
@@ -27,7 +29,7 @@ class _DayWidgetState extends State<DayWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Day d = Hive.box<Day>('dayBox').get(day);
+    Day d = Hive.box<Day>('dayBox').get(widget.day);
     if (d != null) {
       return renderDishes(d);
     } else {
@@ -42,7 +44,11 @@ class _DayWidgetState extends State<DayWidget> {
     }
     return Column(
       children: d.entries.map((dish) {
-        return DishOrNoteWidget(day: d, dish: dish);
+        return DishOrNoteWidget(
+          day: d,
+          dish: dish,
+          onTap: widget.onTap,
+        );
       }).toList(),
     );
   }

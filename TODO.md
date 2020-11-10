@@ -69,7 +69,7 @@ day_dishes (int day, int dish_id FK dish.id, order int)
 - [x] suche fixen
 - [ ] mehrere kategorien = oder suche
   - [ ] umschalter oder/und
-- [ ] gericht im plan auswählen = bearbeiten oder zumindest ansehen
+- [x] gericht im plan auswählen = bearbeiten oder zumindest ansehen
     - da stehen ja die notizen
 - [ ] notiz = url feld zum anklicken https://pub.dev/packages/flutter_linkify
 - [x] platz verbrauch tag und gericht nebeneinander

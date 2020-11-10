@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/dish.dart';
-
-typedef DishTapCallback = void Function(BuildContext context, Dish dish);
-typedef DishLongPressCallback = void Function(BuildContext context, Dish dish);
+import '../callbacks/dish.dart';
 
 class DishList extends StatelessWidget {
   final List<Dish> dishes;

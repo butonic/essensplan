@@ -6,6 +6,8 @@ import 'package:hive/hive.dart';
 import '../model/dish.dart';
 import '../model/day.dart';
 import '../widgets/day.dart';
+import '../model/category.dart';
+import '../pages/edit_dish.dart';
 
 const dayUnselected = -1;
 
@@ -55,7 +57,6 @@ class _PlanPageState extends State<PlanPage> {
       ),
       body: ScrollablePositionedList.builder(
           initialScrollIndex: currentDay,
-          padding: const EdgeInsets.all(4.0),
           itemCount: 40000,
           itemScrollController: itemScrollController,
           itemPositionsListener: itemPositionsListener,
@@ -115,36 +116,64 @@ class _PlanPageState extends State<PlanPage> {
   Widget _buildRow(BuildContext context, int day) {
     var d = epoch.add(Duration(days: day));
     return ListTile(
-        tileColor: day == selectedDay ? Colors.amber : Colors.white,
-        leading: GestureDetector(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  DateFormat('E').format(d),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text(DateFormat('dd.MM').format(d)),
-              ],
+      selected: day == selectedDay,
+      //tileColor: day == selectedDay ? Colors.amber : Colors.white,
+      leading: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            DateFormat('E').format(d),
+            style: TextStyle(
+                color: day == selectedDay
+                    ? Theme.of(context).accentColor
+                    : Theme.of(context).textTheme.bodyText1.color,
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
+          Text(
+            DateFormat('dd.MM').format(d),
+            style: TextStyle(
+              color: day == selectedDay
+                  ? Theme.of(context).accentColor
+                  : Theme.of(context).textTheme.bodyText1.color,
             ),
-            onTap: () {
-              // unfocus current text input
-              // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-              FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus) {
-                currentFocus.unfocus();
-              } else {
-                // TODO prevent row from being selected if we are just tapping to unfocus a note
-              }
-              setState(() {
-                if (selectedDay == day) {
-                  selectedDay = dayUnselected;
-                } else {
-                  selectedDay = day;
-                }
-              });
-            }),
-        title: DayWidget(day: day));
+          ),
+        ],
+      ),
+      title: DayWidget(
+        day: day,
+        onTap: (BuildContext context, Dish dish) {
+          if (dish != null) {
+            // unfocus current text input
+            // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+            _editDish(context, dish);
+          }
+
+          setState(() {
+            if (selectedDay != day) {
+              selectedDay = day;
+            }
+          });
+        },
+      ),
+      onTap: () {
+        // unfocus current text input
+        // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+        setState(() {
+          if (selectedDay != day) {
+            selectedDay = day;
+          }
+        });
+      },
+    );
   }
 
   void _selectDish(BuildContext context, int day) async {
@@ -170,8 +199,21 @@ class _PlanPageState extends State<PlanPage> {
         }
         dm.entries.add(result);
         dm.save();
-        // TODO DBProvider.db.addDishToDay(day, 0, result.id, null);
       });
+    }
+  }
+
+  // this should be a view... maybe a popup
+  void _editDish(BuildContext context, Dish dish) async {
+    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
+        arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
+
+    if (editedArgs is EditDishArguments) {
+      editedArgs.dish.save();
+      //TODO update categories?
+      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
+      //  allCategories = categories;
+      // });
     }
   }
 }
