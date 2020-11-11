@@ -30,6 +30,8 @@ class _DishesPageState extends State<DishesPage> {
   List<Category> selectedCategories;
   List<Dish> filteredDishes;
 
+  bool andFilterCategories = false;
+
   //getting data from the db
   @override
   void initState() {
@@ -58,11 +60,11 @@ class _DishesPageState extends State<DishesPage> {
       ]),
       body: new Form(
         key: _dishesKey,
-        child: new Column(
+        child: Column(
           children: <Widget>[
-            _buildSearchField(),
+            //_buildSearchField(),
             _buildCategoryDropdown(),
-            new Text('Tags'),
+            //new Text('Tags'),
             Expanded(
               child: filteredDishes != null && filteredDishes.length > 0
                   ? new DishList(
@@ -100,6 +102,8 @@ class _DishesPageState extends State<DishesPage> {
 
   //Create a app bar title widget
   Widget _buildTitle(BuildContext context) {
+    return _buildSearchField();
+    /*
     var horizontalTitleAlignment =
         Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
 
@@ -118,6 +122,7 @@ class _DishesPageState extends State<DishesPage> {
         ),
       ),
     );
+    */
   }
 
   //Creating search box widget
@@ -128,66 +133,90 @@ class _DishesPageState extends State<DishesPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
-              child: new TextField(
+              child: TextField(
+                cursorColor: Colors.white,
                 controller: _searchQuery,
-                autofocus: true,
+                //autofocus: true,
                 decoration: const InputDecoration(
                   hintText: 'Suchen...',
                   border: InputBorder.none,
-                  hintStyle: const TextStyle(color: Colors.black26),
+                  hintStyle: const TextStyle(color: Colors.white70),
                 ),
-                style: const TextStyle(color: Colors.black, fontSize: 16.0),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
                 onChanged: (String q) {
                   updateSearchQuery(q, selectedCategories);
                 },
               ),
             ),
-            new IconButton(
-                icon: Icon(Icons.clear), onPressed: _clearSearchQuery)
+            IconButton(icon: Icon(Icons.clear), onPressed: _clearSearchQuery)
           ],
         ));
   }
 
   Widget _buildCategoryDropdown() {
-    return new Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: MultiSelect(
-          autovalidate: false,
-          titleText: 'Kategorien',
-          selectIcon: null,
-          validator: (value) {
-            if (value == null) {
-              return 'Berühren um ein oder mehrere Kategorien zu wählen ...';
-            }
-          },
-          errorText: 'Berühren um ein oder mehrere Kategorien zu wählen ...',
-          hintText: '',
-          dataSource: Hive.box<Category>('categoryBox')
-              .values
-              .map((category) => {
-                    "category": category,
-                    "displayname": category.name,
-                  })
-              .toList(),
-          textField: 'displayname',
-          valueField: 'category',
-          filterable: true,
-          change: (value) {
-            // cast dynamic to List<Category>
-            var categories = (value as List)
-                ?.map((dynamic item) => item as Category)
-                ?.toList();
-            updateSearchQuery(query, categories);
-          },
-          onSaved: (value) {
-            // cast dynamic to List<Category>
-            var categories = (value as List)
-                .whereType<Category>()
-                ?.map((dynamic item) => item as Category)
-                ?.toList();
-            updateSearchQuery(query, categories);
-          }),
-    );
+    return Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: MultiSelect(
+                titleText: 'Kategorien',
+                selectIcon: null,
+                saveButtonText: 'Filtern',
+                validator: (value) {
+                  if (value == null) {
+                    return 'Berühren um ein oder mehrere Kategorien zu wählen ...';
+                  }
+                  return '';
+                },
+                errorText:
+                    'Berühren um ein oder mehrere Kategorien zu wählen ...',
+                hintText: '',
+                dataSource: Hive.box<Category>('categoryBox')
+                    .values
+                    .map((category) => {
+                          "category": category,
+                          "displayname": category.name,
+                        })
+                    .toList(),
+                textField: 'displayname',
+                valueField: 'category',
+                filterable: true,
+                change: (value) {
+                  // cast dynamic to List<Category>
+                  var categories = (value as List)
+                      ?.map((dynamic item) => item as Category)
+                      ?.toList();
+                  updateSearchQuery(query, categories);
+                },
+                onSaved: (value) {
+                  // cast dynamic to List<Category>
+                  var categories = (value as List)
+                      .whereType<Category>()
+                      ?.map((dynamic item) => item as Category)
+                      ?.toList();
+                  updateSearchQuery(query, categories);
+                },
+              ),
+            ),
+            IconButton(
+              //icon: Icon(andFilterCategories ? Icons.call_merge : Icons.call_split),
+              //icon: Icon(andFilterCategories ? Icons.link : Icons.link_off),
+              icon: Icon(andFilterCategories
+                  ? Icons.border_outer
+                  : Icons.border_vertical), // border vertical oder border inner
+              onPressed: () {
+                setState(() {
+                  andFilterCategories = !andFilterCategories;
+                  updateSearchQuery(query, selectedCategories);
+                });
+              },
+            ),
+          ],
+        ));
   }
 
   void updateSearchQuery(String newQuery, List<Category> categories) async {
@@ -195,17 +224,32 @@ class _DishesPageState extends State<DishesPage> {
     // 1. filter notes
     var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
 
-    if (newQuery.length > 0) {
+    if (newQuery?.isNotEmpty == true) {
       dishes = dishes.where((e) => e.name.contains(newQuery));
     }
+
+    // if categories have been selected
+    if (categories?.isNotEmpty == true) {
+      if (andFilterCategories) {
+        // only add dishes that have all of the selected the categories
+        dishes =
+            dishes.where((d) => d.categories.toSet().containsAll(categories));
+      } else {
+        // add all dishes with any of the selected categories
+        dishes = dishes.where(
+            (dish) => dish.categories.any((dc) => categories.contains(dc)));
+      }
+    }
+
     filteredDishes.addAll(dishes);
 
-    // 3. filter categories TODO by or, not and - needs to use where an add all dishes that have one of the selected categories
-    selectedCategories.clear();
-    if (categories != null && categories.length > 0) {
-      filteredDishes
-          .removeWhere((e) => !e.categories.toSet().containsAll(categories));
-      selectedCategories.addAll(categories);
+    // 3. filter categories
+    if (selectedCategories != categories) {
+      // we have new categories
+      selectedCategories.clear();
+      if (categories?.isNotEmpty == true) {
+        selectedCategories.addAll(categories);
+      }
     }
 
     query = newQuery;

@@ -67,14 +67,19 @@ day_dishes (int day, int dish_id FK dish.id, order int)
 
 # v0.0.1
 - [x] suche fixen
-- [ ] mehrere kategorien = oder suche
-  - [ ] umschalter oder/und
+- [x] mehrere kategorien = oder suche
+  - [x] umschalter oder/und
 - [x] gericht im plan auswählen = bearbeiten oder zumindest ansehen
     - da stehen ja die notizen
 - [ ] notiz = url feld zum anklicken https://pub.dev/packages/flutter_linkify
+    - view dish mit edit button
+    - notiz kann emojis und urls enthalten
+    - anhänge, zb bilder ... mit preview
 - [x] platz verbrauch tag und gericht nebeneinander
   - tag selektieren -> + button zum hinzufügen, 2. notiz button zum notiz hinzufügen
 - [x] alle kategorien sehen
 
 # backlog
 - [ ] bild aus der url laden
+- [ ] export bei gerätewechsel oder sync
+  - webdav per https://github.com/timestee/dart-webdav/issues/15
