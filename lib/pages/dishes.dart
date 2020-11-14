@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_multiselect/flutter_multiselect.dart';
 
@@ -225,7 +223,8 @@ class _DishesPageState extends State<DishesPage> {
     var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
 
     if (newQuery?.isNotEmpty == true) {
-      dishes = dishes.where((e) => e.name.contains(newQuery));
+      dishes = dishes
+          .where((e) => e.name.toLowerCase().contains(newQuery.toLowerCase()));
     }
 
     // if categories have been selected

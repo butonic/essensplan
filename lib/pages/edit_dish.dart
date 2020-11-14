@@ -47,6 +47,8 @@ class EditDishFormState extends State<EditDishForm> {
                 args.dish.name = value;
               }),
           TextFormField(
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
               initialValue: args.dish.note,
               decoration: InputDecoration(labelText: 'Notizen'),
               onSaved: (String value) {

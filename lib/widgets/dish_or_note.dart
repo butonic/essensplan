@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 import '../model/day.dart';
 import '../model/dish.dart';
@@ -34,10 +33,11 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
     } else if (widget._dish.name != null) {
       text = Center(
           child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(4.0),
         child: GestureDetector(
-            child:
-                Text(widget._dish.name, style: TextStyle(color: Colors.black)),
+            child: Text(widget._dish.name,
+                style: TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold)),
             onTap: () {
               widget.onTap(context, widget._dish);
             }),
@@ -49,9 +49,13 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
         textAlign: TextAlign.center,
         autofocus: false,
         controller: TextEditingController(text: widget._dish.note),
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 14,
+        ),
         decoration: InputDecoration(
             isDense: true,
-            contentPadding: const EdgeInsets.all(8.0),
+            contentPadding: const EdgeInsets.all(4.0),
             border: InputBorder.none,
             hintText: 'Neue Notiz'),
         onChanged: (value) {

@@ -44,8 +44,6 @@ void main() async {
 // that means we need a data model:
 // list of days
 // each day can have multiple dishes and notes
-//
-double _fontSize = 14;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
