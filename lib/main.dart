@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:ober_menu_planner/pages/view_dish.dart';
 import 'pages/plan.dart';
 import 'pages/dishes.dart';
 import 'pages/edit_dish.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => PlanPage(),
         '/dishes': (context) => DishesPage(),
+        '/dishes/view': (context) => ViewDishPage(),
         '/dishes/edit': (context) => EditDishPage(),
       },
       //home: PlanPage(),

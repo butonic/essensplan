@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_multiselect/flutter_multiselect.dart';
+import 'package:flutter_tags/flutter_tags.dart';
+import 'package:ober_menu_planner/widgets/split.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
@@ -17,6 +18,8 @@ class DishesPage extends StatefulWidget {
   @override
   _DishesPageState createState() => _DishesPageState();
 }
+
+final GlobalKey<TagsState> _dishesTagStateKey = GlobalKey<TagsState>();
 
 class _DishesPageState extends State<DishesPage> {
   static final GlobalKey<ScaffoldState> _dishesKey =
@@ -58,7 +61,9 @@ class _DishesPageState extends State<DishesPage> {
       ]),
       body: new Form(
         key: _dishesKey,
-        child: Column(
+        child: Split(
+          axis: Axis.vertical,
+          initialFractions: [.2, .8],
           children: <Widget>[
             //_buildSearchField(),
             _buildCategoryDropdown(),
@@ -160,7 +165,46 @@ class _DishesPageState extends State<DishesPage> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: MultiSelect(
+              child: Tags(
+                key: _dishesTagStateKey,
+                itemCount: Hive.box<Category>('categoryBox').length, // required
+                itemBuilder: (int index) {
+                  final c = Hive.box<Category>('categoryBox').getAt(index);
+
+                  return ItemTags(
+                    // Each ItemTags must contain a Key. Keys allow Flutter to
+                    // uniquely identify widgets.
+                    key: Key(index.toString()),
+                    //key: Key(item.name),
+                    index: index, // required
+                    title: c.name,
+                    // true if dish has this category
+                    active: false, // TODO
+                    customData: c,
+                    onPressed: (Item item) {
+                      if (item.active) {
+                        selectedCategories.add(item.customData);
+                      } else {
+                        selectedCategories.remove(item.customData);
+                      }
+                      updateSearchQuery(query, selectedCategories);
+                    },
+
+                    //removeButton: ItemTagsRemoveButton(
+                    //  onRemoved: () {
+                    //    // Remove the item from the data source.
+                    //    setState(() {
+                    //      // required
+                    //      args.categories.removeAt(index);
+                    //    });
+                    //    //required
+                    //    return true;
+                    //  },
+                    //),
+                  );
+                },
+              ),
+              /* MultiSelect(
                 titleText: 'Kategorien',
                 selectIcon: null,
                 saveButtonText: 'Filtern',
@@ -199,6 +243,7 @@ class _DishesPageState extends State<DishesPage> {
                   updateSearchQuery(query, categories);
                 },
               ),
+              */
             ),
             IconButton(
               //icon: Icon(andFilterCategories ? Icons.call_merge : Icons.call_split),

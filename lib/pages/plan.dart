@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ober_menu_planner/pages/view_dish.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:hive/hive.dart';
 
 import '../model/dish.dart';
 import '../model/day.dart';
-import '../model/category.dart';
 import '../widgets/day.dart';
-import '../pages/edit_dish.dart';
 
 const dayUnselected = -1;
 
@@ -169,7 +168,8 @@ class _PlanPageState extends State<PlanPage> {
                 if (!currentFocus.hasPrimaryFocus) {
                   currentFocus.unfocus();
                 }
-                _editDish(context, dish);
+                _viewDish(context, dish);
+                //_editDish(context, dish);
               }
 
               setState(() {
@@ -222,17 +222,8 @@ class _PlanPageState extends State<PlanPage> {
     }
   }
 
-  // this should be a view... maybe a popup
-  void _editDish(BuildContext context, Dish dish) async {
-    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-        arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
-
-    if (editedArgs is EditDishArguments) {
-      editedArgs.dish.save();
-      //TODO update categories?
-      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
-      //  allCategories = categories;
-      // });
-    }
+  void _viewDish(BuildContext context, Dish dish) async {
+    await Navigator.pushNamed(context, '/dishes/view',
+        arguments: ViewDishArguments(dish));
   }
 }
