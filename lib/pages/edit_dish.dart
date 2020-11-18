@@ -54,13 +54,10 @@ class EditDishPageState extends State<EditDishPage> {
                 key: _tagStateKey,
                 textField: TagsTextField(
                   hintText: 'Kategorie hinzufügen',
-                  //lowerCase: true, // lowercases the resulting tag
-                  //textStyle: TextStyle(fontSize: _fontSize),
                   constraintSuggestion: false,
                   suggestions: args.categories.values
                       .map<String>((e) => e.name)
                       .toList(),
-                  //width: double.infinity, padding: EdgeInsets.symmetric(horizontal: 10),
                   onSubmitted: (String str) {
                     var cat = args.categories.values.firstWhere(
                         ((e) => e.name == str),

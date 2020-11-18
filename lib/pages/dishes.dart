@@ -48,6 +48,7 @@ class _DishesPageState extends State<DishesPage> {
     _searchQuery = new TextEditingController();
     selectedCategories = new List<Category>();
   }
+  // TODO on destroy remove the initialized vars?
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,22 +66,21 @@ class _DishesPageState extends State<DishesPage> {
           axis: Axis.vertical,
           initialFractions: [.2, .8],
           children: <Widget>[
-            //_buildSearchField(),
             _buildCategoryDropdown(),
-            //new Text('Tags'),
-            Expanded(
-              child: filteredDishes != null && filteredDishes.length > 0
-                  ? new DishList(
-                      dishes: filteredDishes,
-                      onTap: _selectedDish,
-                      onLongPress: _editDish,
-                    )
-                  : Hive.box<Dish>('dishBox').values == null
-                      ? new Center(child: new CircularProgressIndicator())
-                      : new Center(
-                          child: new Text("Kein Treffer"),
-                        ),
-            ),
+            //Expanded(
+            //  child: filteredDishes != null && filteredDishes.length > 0
+            filteredDishes != null && filteredDishes.length > 0
+                ? new DishList(
+                    dishes: filteredDishes,
+                    onTap: _selectedDish,
+                    onLongPress: _editDish,
+                  )
+                : Hive.box<Dish>('dishBox').values == null
+                    ? new Center(child: new CircularProgressIndicator())
+                    : new Center(
+                        child: new Text("Kein Treffer"),
+                      ),
+            //),
           ],
         ),
       ),
@@ -322,10 +322,6 @@ class _DishesPageState extends State<DishesPage> {
 
     if (editedArgs is EditDishArguments) {
       Hive.box<Dish>('dishBox').add(editedArgs.dish);
-      //TODO update categories?
-      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
-      //  allCategories = categories;
-      //});
       _clearSearchQuery();
     }
   }
@@ -333,17 +329,9 @@ class _DishesPageState extends State<DishesPage> {
   void _editDish(BuildContext context, Dish dish) async {
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
         arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
-    //final editedDish = await Navigator.push(
-    //  context,
-    //  MaterialPageRoute<Dish>(builder: (context) => EditDishPage()),
-    //);
 
     if (editedArgs is EditDishArguments) {
       editedArgs.dish.save();
-      //TODO update categories?
-      //await DBProvider.db.getAllCategories().then((List<Category> categories) {
-      //  allCategories = categories;
-      // });
       _clearSearchQuery();
     }
   }

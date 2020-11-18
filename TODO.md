@@ -83,3 +83,25 @@ day_dishes (int day, int dish_id FK dish.id, order int)
 - [ ] bild aus der url laden
 - [ ] export bei gerätewechsel oder sync
   - webdav per https://github.com/timestee/dart-webdav/issues/15
+
+  Unhandled exception:
+Bad state: No element
+#0      Iterable.last (dart:core/iterable.dart:542:7)
+#1      _ImmutableMapValueIterable.Eval (:0:1)
+#2      Object.noSuchMethod (dart:core-patch/object_patch.dart:51:5)
+#3      int./ (dart:core-patch/integers.dart:28:36)
+#4      _PositionedListState._schedulePositionNotificationUpdate.<anonymous closure> (package:scrollable_positioned_list/src/positioned_list.dart:321:53)
+#5      SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1117:15)
+#6      SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1063:9)
+#7      SchedulerBinding.scheduleWarmUpFrame.<anonymous closure> (package:flutter/src/scheduler/binding.dart:864:7)
+#8      _rootRun (dart:async/zone.dart:1182:47)
+#9      _CustomZone.run (dart:async/zone.dart:1093:19)
+#10     _CustomZone.runGuarded (dart:async/zone.dart:997:7)
+#11     _CustomZone.bindCallbackGuarded.<anonymous closure> (dart:async/zone.dart:1037:23)
+#12     _rootRun (dart:async/zone.dart:1190:13)
+#13     _CustomZone.run (dart:async/zone.dart:1093:19)
+#14     _CustomZone.bindCallback.<anonymous closure> (dart:async/zone.dart:1021:23)
+#15     Timer._createTimer.<anonymous closure> (dart:async-patch/timer_patch.dart:18:15)
+#16     _Timer._runTimers (dart:isolate-patch/timer_impl.dart:397:19)
+#17     _Timer._handleMessage (dart:isolate-patch/timer_impl.dart:428:5)
+#18     _RawReceivePortImpl._handleMessage (dart:isolate-patch/isolate_patch.dart:168:12)

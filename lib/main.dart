@@ -36,8 +36,6 @@ void main() async {
   Intl.defaultLocale = "de_DE";
 }
 
-// TODO use named routing https://medium.com/flutter-community/flutter-navigation-cheatsheet-a-guide-to-named-routing-dc642702b98c
-
 //A page is considered a stateful widget that covers the entire navigation screen.
 
 // the list needs to build a start and end date

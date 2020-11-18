@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../model/day.dart';
 import '../model/dish.dart';
 import '../callbacks/dish.dart';
 
 class DishOrNoteWidget extends StatefulWidget {
-  final Day _day;
   final Dish _dish;
 
   /// Called when the user taps a dish.
   final DishTapCallback onTap;
+
   DishOrNoteWidget({
-    Day day,
     Dish dish,
     DishTapCallback onTap,
   })  : this._dish = dish,
-        this._day = day,
         this.onTap = onTap;
 
   @override
@@ -23,7 +20,6 @@ class DishOrNoteWidget extends StatefulWidget {
 }
 
 class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
-  bool inEditMode = false;
   Widget text = Text("Empty");
 
   @override
@@ -33,7 +29,7 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
     } else if (widget._dish.name != null) {
       text = Center(
           child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: GestureDetector(
             child: Text(widget._dish.name,
                 style: TextStyle(
@@ -44,7 +40,6 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
       ));
     } else if (widget._dish.note != null) {
       text = TextField(
-        keyboardType: TextInputType.multiline,
         maxLines: null,
         textAlign: TextAlign.center,
         autofocus: false,
@@ -64,29 +59,14 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
             widget._dish.save();
           }
         },
-        /*
-        onTap: () {
-          // just make the list select this day
-          widget.onTap(context, null);
-        },
-        */
+        //onTap: () {
+        //  widget.onTap(context, widget._dish);
+        //},
       );
     }
-    return Dismissible(
-        key: ObjectKey(widget._dish),
-        onDismissed: (direction) {
-          var removed = widget._day.entries.remove(widget._dish);
-          if (removed) {
-            widget._day.save();
-            // TODO wenn die liste leer ist muss das neu gerendert werden setState(() {});
-          }
-          // Show a snackbar. This snackbar could also contain "Undo" actions.
-          //Scaffold.of(context).showSnackBar(
-          //    SnackBar(content: Text("${this._dish.name} dismissed")));
-        },
-        child: SizedBox(
-          width: double.infinity,
-          child: text,
-        ));
+    return SizedBox(
+      width: double.infinity,
+      child: text,
+    );
   }
 }
