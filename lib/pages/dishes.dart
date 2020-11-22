@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
-import 'package:ober_menu_planner/widgets/split.dart';
+import 'package:essensplan/widgets/split.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
@@ -32,6 +32,7 @@ class _DishesPageState extends State<DishesPage> {
   List<Dish> filteredDishes;
 
   bool andFilterCategories = false;
+  bool showDeleted = false;
 
   //getting data from the db
   @override
@@ -42,7 +43,10 @@ class _DishesPageState extends State<DishesPage> {
     setState(() {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
-          .where((element) => element.name != null));
+          .where((dish) => dish.deleted != true && dish.name != null));
+      filteredDishes.sort((d1, d2) {
+        return d1.name.compareTo(d2.name);
+      });
     });
 
     _searchQuery = new TextEditingController();
@@ -74,6 +78,23 @@ class _DishesPageState extends State<DishesPage> {
                     dishes: filteredDishes,
                     onTap: _selectedDish,
                     onLongPress: _editDish,
+                    onDismissed: (BuildContext context,
+                        DismissDirection direction, Dish dish) {
+                      setState(() {
+                        filteredDishes.remove(dish);
+                        if (dish.deleted == true) {
+                          dish.deleted = false;
+                        } else {
+                          // it might be null or false, in both cases set to true
+                          dish.deleted = true;
+                        }
+                        dish.save();
+                      });
+                      // Show a snackbar. This snackbar could also contain "Undo" actions.
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "${dish.name == null ? dish.note : dish.name} ${dish.deleted ? 'Gelöscht' : 'Wiederhergestellt'}")));
+                    },
                   )
                 : Hive.box<Dish>('dishBox').values == null
                     ? new Center(child: new CircularProgressIndicator())
@@ -89,7 +110,65 @@ class _DishesPageState extends State<DishesPage> {
           _newDish(context);
         },
         child: Icon(Icons.add),
-        //backgroundColor: Colors.yellow,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          children: [
+            GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(andFilterCategories
+                          ? Icons.border_outer
+                          : Icons.border_vertical),
+                      SizedBox(width: 4),
+                      Text(
+                        andFilterCategories
+                            ? "Alle Kategorien"
+                            : "Eine der Kategorien",
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
+              onTap: () {
+                setState(() {
+                  andFilterCategories = !andFilterCategories;
+                  updateSearchQuery(query, selectedCategories);
+                });
+              },
+            ),
+            Spacer(),
+            GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        showDeleted ? 'gelöschte Gerichte' : 'Gerichte',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      SizedBox(width: 4),
+                      Icon(showDeleted
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                    ],
+                  )),
+              onTap: () {
+                setState(() {
+                  showDeleted = !showDeleted;
+                  updateSearchQuery(query, selectedCategories);
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -154,7 +233,10 @@ class _DishesPageState extends State<DishesPage> {
                 },
               ),
             ),
-            IconButton(icon: Icon(Icons.clear), onPressed: _clearSearchQuery)
+            _searchQuery.text.isEmpty
+                ? Container()
+                : IconButton(
+                    icon: Icon(Icons.clear), onPressed: _clearSearchQuery)
           ],
         ));
   }
@@ -245,7 +327,7 @@ class _DishesPageState extends State<DishesPage> {
               ),
               */
             ),
-            IconButton(
+            /*IconButton(
               //icon: Icon(andFilterCategories ? Icons.call_merge : Icons.call_split),
               //icon: Icon(andFilterCategories ? Icons.link : Icons.link_off),
               icon: Icon(andFilterCategories
@@ -257,7 +339,7 @@ class _DishesPageState extends State<DishesPage> {
                   updateSearchQuery(query, selectedCategories);
                 });
               },
-            ),
+            ),*/
           ],
         ));
   }
@@ -266,6 +348,12 @@ class _DishesPageState extends State<DishesPage> {
     filteredDishes.clear();
     // 1. filter notes
     var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
+
+    if (showDeleted == true) {
+      dishes = dishes.where((d) => d.deleted == true);
+    } else {
+      dishes = dishes.where((d) => d.deleted != true);
+    }
 
     if (newQuery?.isNotEmpty == true) {
       dishes = dishes
@@ -286,6 +374,9 @@ class _DishesPageState extends State<DishesPage> {
     }
 
     filteredDishes.addAll(dishes);
+    filteredDishes.sort((d1, d2) {
+      return d1.name.compareTo(d2.name);
+    });
 
     // 3. filter categories
     if (selectedCategories != categories) {

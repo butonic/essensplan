@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ober_menu_planner/pages/view_dish.dart';
+import 'package:essensplan/pages/view_dish.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:hive/hive.dart';
 
@@ -32,7 +32,6 @@ class _PlanPageState extends State<PlanPage> {
   final epoch = new DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
   int selectedDay = dayUnselected;
-  int _currentNav = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +46,7 @@ class _PlanPageState extends State<PlanPage> {
 
     return Scaffold(
       key: _planKey,
-      appBar: AppBar(
+      /*appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.today),
           onPressed: () {
@@ -69,26 +68,71 @@ class _PlanPageState extends State<PlanPage> {
             tooltip: "Gerichte", // kommt bei long press
           ),
         ],
+      ),*/
+      resizeToAvoidBottomInset:
+          false, // TODO scroll tapped text area into view?
+      body: ScrollablePositionedList.builder(
+          initialScrollIndex:
+              currentDay - 1, // the first row is overshadowed by the status bar
+          itemCount: 40000,
+          itemScrollController: itemScrollController,
+          itemPositionsListener: itemPositionsListener,
+          itemBuilder: (context, i) => item(context, i)),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.restaurant_menu),
+        onPressed: selectedDay == dayUnselected
+            ? null
+            : () {
+                _selectDish(context, selectedDay);
+              },
       ),
-      body: /*Expanded(
-          child:*/
-          ScrollablePositionedList.builder(
-              initialScrollIndex: currentDay,
-              itemCount: 40000,
-              itemScrollController: itemScrollController,
-              itemPositionsListener: itemPositionsListener,
-              itemBuilder: (context, i) => item(context, i)) /*)*/,
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Positioned(
-            bottom: 10.0,
-            right: 10.0,
-            child: FloatingActionButton(
-              heroTag: 'note',
-              onPressed: selectedDay == dayUnselected
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          children: [
+            GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(Icons.today),
+                      Text(
+                        'Heute',
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
+              onTap: () {
+                itemScrollController.scrollTo(
+                    index: currentDay,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOutCubic);
+                setState(() {
+                  selectedDay = currentDay;
+                });
+              },
+            ),
+            Spacer(),
+            GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(Icons.note_add),
+                      Text(
+                        'Notiz',
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
+              onTap: selectedDay == dayUnselected
                   ? null
                   : () {
-                      // TODO add editable text field
                       setState(() {
                         var dayBox = Hive.box<Day>('dayBox');
                         var dm = dayBox.get(selectedDay);
@@ -99,7 +143,6 @@ class _PlanPageState extends State<PlanPage> {
                         if (dm.entries == null) {
                           dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
                         }
-                        //var note = new Dish(note: "Notiz");
                         var note = new Dish(
                             note: ""); // a hint is rendered for an empty string
                         Hive.box<Dish>('dishBox').add(note);
@@ -107,23 +150,27 @@ class _PlanPageState extends State<PlanPage> {
                         dm.save();
                       });
                     },
-              child: Icon(Icons.note_add),
             ),
-          ),
-          Positioned(
-            bottom: 10.0,
-            right: 80.0,
-            child: FloatingActionButton(
-              heroTag: 'dish',
-              onPressed: selectedDay == dayUnselected
-                  ? null
-                  : () {
-                      _selectDish(context, selectedDay);
-                    },
-              child: Icon(Icons.add),
+            GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.category,
+                        color: Colors.black38,
+                      ),
+                      Text(
+                        'Kategorien',
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       /*
       bottomNavigationBar: BottomNavigationBar(
@@ -245,28 +292,47 @@ class _PlanPageState extends State<PlanPage> {
                     content: Text(
                         "${dish.name == null ? dish.note : dish.name} gelöscht")));
               },
-              child: SizedBox(
+              child:
+                  /*SizedBox(
                   width: double.infinity,
-                  child: DishOrNoteWidget(
-                    //focusNode: notesFocusNode,
-                    dish: dish,
-                    onTap: (context, dish) {
-                      // unfocus current text input
-                      // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-                      FocusScopeNode currentFocus = FocusScope.of(context);
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (dish.name != null) {
-                        _viewDish(context, dish);
-                      }
-                      setState(() {
-                        if (selectedDay != day) {
-                          selectedDay = day;
+                  child: */
+                  DishOrNoteWidget(
+                      dish: dish,
+                      onTap: (context, dish) {
+                        // unfocus current text input
+                        // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
                         }
-                      });
-                    },
-                  )),
+                        if (dish.name != null) {
+                          _viewDish(context, dish);
+                        }
+                        setState(() {
+                          if (selectedDay != day) {
+                            selectedDay = day;
+                          }
+                        });
+                      },
+                      noteSuffix: selectedDay != day
+                          ? null
+                          : LongPressDraggable<DragData>(
+                              data: DragData(dm, i),
+                              //dragAnchor: DragAnchor.pointer,
+                              feedback: Card(
+                                  child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Text(
+                                    dish.name == null ? dish.note : dish.name,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold)),
+                              )),
+                              child: Icon(
+                                Icons.drag_handle,
+                                size: 14,
+                              ))) /*)*/,
             )));
       }
     }

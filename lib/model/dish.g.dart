@@ -21,13 +21,14 @@ class DishAdapter extends TypeAdapter<Dish> {
       note: fields[1] as String,
     )
       ..categories = (fields[2] as HiveList)?.castHiveList()
-      ..tags = (fields[3] as HiveList)?.castHiveList();
+      ..tags = (fields[3] as HiveList)?.castHiveList()
+      ..deleted = fields[4] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Dish obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class DishAdapter extends TypeAdapter<Dish> {
       ..writeByte(2)
       ..write(obj.categories)
       ..writeByte(3)
-      ..write(obj.tags);
+      ..write(obj.tags)
+      ..writeByte(4)
+      ..write(obj.deleted);
   }
 
   @override

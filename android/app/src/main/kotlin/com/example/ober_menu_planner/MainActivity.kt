@@ -1,4 +1,4 @@
-package com.example.ober_menu_planner
+package de.butonic.essensplan
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -4,16 +4,16 @@ import '../model/dish.dart';
 import '../callbacks/dish.dart';
 
 class DishOrNoteWidget extends StatefulWidget {
-  final Dish _dish;
+  final Dish dish;
 
   /// Called when the user taps a dish.
   final DishTapCallback onTap;
 
-  DishOrNoteWidget({
-    Dish dish,
-    DishTapCallback onTap,
-  })  : this._dish = dish,
-        this.onTap = onTap;
+  /// Called when the user taps a dish.
+  final Widget noteSuffix;
+
+  DishOrNoteWidget({Key key, this.dish, this.onTap, this.noteSuffix})
+      : super(key: key);
 
   @override
   _DishOrNoteWidgetState createState() => _DishOrNoteWidgetState();
@@ -24,49 +24,56 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget._dish == null) {
+    if (widget.dish == null) {
       text = Text('');
-    } else if (widget._dish.name != null) {
+    } else if (widget.dish.name != null) {
       text = Center(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: GestureDetector(
-            child: Text(widget._dish.name,
+            child: Text(widget.dish.name,
                 style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    decoration: widget.dish.deleted != true
+                        ? TextDecoration.none
+                        : TextDecoration.lineThrough)),
             onTap: () {
-              widget.onTap(context, widget._dish);
+              widget.onTap(context, widget.dish);
             }),
       ));
-    } else if (widget._dish.note != null) {
+    } else if (widget.dish.note != null) {
       text = TextField(
         maxLines: null,
         textAlign: TextAlign.center,
         autofocus: false,
-        controller: TextEditingController(text: widget._dish.note),
+        controller: TextEditingController(text: widget.dish.note),
         style: TextStyle(
           color: Colors.black87,
           fontSize: 14,
         ),
         decoration: InputDecoration(
+            suffix: widget.noteSuffix,
             isDense: true,
             contentPadding: const EdgeInsets.all(4.0),
             border: InputBorder.none,
             hintText: 'Neue Notiz'),
         onChanged: (value) {
-          if (widget._dish.note != value) {
-            widget._dish.note = value;
-            widget._dish.save();
+          if (widget.dish.note != value) {
+            widget.dish.note = value;
+            widget.dish.save();
           }
         },
         //onTap: () {
-        //  widget.onTap(context, widget._dish);
+        //  widget.onTap(context, widget.dish);
         //},
       );
     }
-    return SizedBox(
+    return text;
+    /*return SizedBox(
       width: double.infinity,
       child: text,
     );
+    */
   }
 }

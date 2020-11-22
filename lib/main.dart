@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:ober_menu_planner/pages/view_dish.dart';
+import 'package:essensplan/pages/view_dish.dart';
 import 'pages/plan.dart';
 import 'pages/dishes.dart';
 import 'pages/edit_dish.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 import 'model/category.dart';
 import 'model/day.dart';
 import 'model/dish.dart';
@@ -32,8 +34,10 @@ void main() async {
   _dayBox = await Hive.openBox<Day>('dayBox');
   _dishBox = await Hive.openBox<Dish>('dishBox');
   _tagBox = await Hive.openBox<Tag>('tagBox');
-  initializeDateFormatting('de_DE', null).then((_) => runApp(MyApp()));
   Intl.defaultLocale = "de_DE";
+
+  timeago.setLocaleMessages('de', timeago.DeMessages());
+  initializeDateFormatting('de_DE', null).then((_) => runApp(EssensplanApp()));
 }
 
 //A page is considered a stateful widget that covers the entire navigation screen.
@@ -44,7 +48,7 @@ void main() async {
 // list of days
 // each day can have multiple dishes and notes
 
-class MyApp extends StatelessWidget {
+class EssensplanApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -77,3 +81,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// TODO ValueListenableBuilder verstehen um auf änderungen in hive zu reagieren
+// und die ui dann neu zu bauen wenn sich was in hive ändert.
+// siehe https://awaik.medium.com/hive-for-flutter-fast-local-storage-database-made-with-dart-167ad63e2d1

@@ -18,6 +18,9 @@ class Dish extends HiveObject {
   @HiveField(3)
   HiveList<Tag> tags;
 
+  @HiveField(4)
+  bool deleted;
+
   Dish({
     this.name,
     this.note,
