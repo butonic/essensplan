@@ -57,7 +57,8 @@ class DishList extends StatelessWidget {
             onDismissed: (direction) {
               this.onDismissed(context, direction, dishes[index]);
             },
-            child: Card(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: new InkWell(
                 onTap: () {
                   this.onTap(context, dishes[index]);
@@ -68,28 +69,34 @@ class DishList extends StatelessWidget {
                 child: new Center(
                   child: new Column(
                     // Stretch the cards in horizontal axis
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          new Text(
+                          Expanded(
+                              child: Text(
                             dishes[index].name,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            textWidthBasis: TextWidthBasis.parent,
+                            maxLines: 1,
                             style: TextStyle(
+                              fontSize: 16,
                               decoration: dishes[index].deleted != true
                                   ? TextDecoration.none
                                   : TextDecoration.lineThrough,
                             ),
-                          ),
+                          )),
                           dateText,
-                          //new Text('12.23.2019'),
                         ],
                       ),
                       new Text(
+                        // TODO multiple text fields with different color? or richtext
                         dishes[index].categories.map((e) => e.name).join(" "),
                         // set some style to text
-                        style:
-                            new TextStyle(fontSize: 15.0, color: Colors.amber),
+                        style: new TextStyle(
+                            fontSize: 12.0, color: Colors.lightGreen),
                       ),
                     ],
                   ),

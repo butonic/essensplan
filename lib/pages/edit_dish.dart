@@ -22,32 +22,60 @@ final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
 
 class EditDishPageState extends State<EditDishPage> {
   final _formKey = GlobalKey<FormState>();
+
   Widget build(BuildContext context) {
     final EditDishArguments args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gericht bearbeiten'),
+        automaticallyImplyLeading: false,
+        title: Text('Gericht bearbeiten'), // TODO bearbeiten vs anlegen
       ),
       body: Form(
         key: _formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // TODO name in die AppBar verschieben
-            TextFormField(
-                initialValue: args.dish.name,
-                autofocus: true,
-                decoration: InputDecoration(labelText: 'Name'),
-                onSaved: (String value) {
-                  args.dish.name = value;
-                }),
-            TextFormField(
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                initialValue: args.dish.note,
-                decoration: InputDecoration(labelText: 'Notizen'),
-                onSaved: (String value) {
-                  args.dish.note = value;
-                }),
+            Padding(
+                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: Text(
+                  "Name",
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(32, 0, 32, 4),
+                child: TextFormField(
+                    initialValue: args.dish.name,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                      hintText: 'Name des Gerichts eingeben',
+                    ),
+                    onSaved: (String value) {
+                      args.dish.name = value;
+                    })),
+            Padding(
+                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: Text(
+                  "Notizen",
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(32, 0, 32, 4),
+                child: TextFormField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    initialValue: args.dish.note,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                      hintText: 'Notizen, Link, etc. zum Gericht eingeben',
+                    ),
+                    onSaved: (String value) {
+                      args.dish.note = value;
+                    })),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Tags(
@@ -84,6 +112,7 @@ class EditDishPageState extends State<EditDishPage> {
                     //key: Key(item.name),
                     index: index, // required
                     title: c.name,
+                    color: c.color != null ? Color(c.color) : Colors.grey,
                     // true if dish has this category
                     active: args.dish.categories.contains(c),
                     customData: c,

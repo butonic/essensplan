@@ -271,7 +271,7 @@ class _PlanPageState extends State<PlanPage> {
                   dishes.removeAt(i);
                 });
                 // Show a snackbar. This snackbar could also contain "Undo" actions.
-                Scaffold.of(context).showSnackBar(SnackBar(
+                _planKey.currentState.showSnackBar(SnackBar(
                     content: Text(
                         "${dish.name == null ? dish.note : dish.name} gelöscht")));
               },
@@ -354,7 +354,7 @@ class _PlanPageState extends State<PlanPage> {
         decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-            color: Colors.amberAccent,
+            color: Colors.lightGreenAccent,
           )),
         ),
         child: ListTile(

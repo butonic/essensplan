@@ -56,21 +56,65 @@ class _DishesPageState extends State<DishesPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(title: _buildTitle(context), actions: <Widget>[
-        //IconButton(
-        //  icon: Icon(Icons.developer_mode),
-        //  onPressed: () {
-        //     Hive.box<Category>('categoryBox').clear();
-        //  },
-        //),
-      ]),
+      appBar: new AppBar(
+          automaticallyImplyLeading: false,
+          title: Text("Gericht auswählen"),
+          actions: <Widget>[
+            //IconButton(
+            //  icon: Icon(Icons.developer_mode),
+            //  onPressed: () {
+            //     Hive.box<Category>('categoryBox').clear();
+            //  },
+            //),
+          ]),
       body: new Form(
         key: _dishesKey,
         child: Split(
           axis: Axis.vertical,
-          initialFractions: [.2, .8],
+          initialFractions: [.4, .6],
           children: <Widget>[
-            _buildCategoryDropdown(),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              /*Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                  child: Text(
+                    "Suchen",
+                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                    textAlign: TextAlign.left,
+                  )),*/
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: TextField(
+                          controller: _searchQuery,
+                          decoration: const InputDecoration(
+                              hintText: 'Suche nach Name ...',
+                              border: InputBorder.none,
+                              hintStyle:
+                                  TextStyle(fontStyle: FontStyle.italic)),
+                          onChanged: (String q) {
+                            updateSearchQuery(q, selectedCategories);
+                          },
+                        ),
+                      ),
+                      _searchQuery.text.isEmpty
+                          ? Container()
+                          : IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: _clearSearchQuery)
+                    ],
+                  )),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
+                  child: Text(
+                    "Filtern nach Kategorien", // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
+                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                    textAlign: TextAlign.left,
+                  )),
+              _buildCategoryDropdown()
+            ]),
             //Expanded(
             //  child: filteredDishes != null && filteredDishes.length > 0
             filteredDishes != null && filteredDishes.length > 0
@@ -216,18 +260,18 @@ class _DishesPageState extends State<DishesPage> {
           children: <Widget>[
             Expanded(
               child: TextField(
-                cursorColor: Colors.white,
+                //cursorColor: Colors.white,
                 controller: _searchQuery,
                 //autofocus: true,
                 decoration: const InputDecoration(
                   hintText: 'Suchen...',
                   border: InputBorder.none,
-                  hintStyle: const TextStyle(color: Colors.white70),
+                  //hintStyle: const TextStyle(color: Colors.white70),
                 ),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
+                //style: const TextStyle(
+                //color: Colors.white,
+                //fontSize: 16.0,
+                //),
                 onChanged: (String q) {
                   updateSearchQuery(q, selectedCategories);
                 },
@@ -260,9 +304,13 @@ class _DishesPageState extends State<DishesPage> {
                     //key: Key(item.name),
                     index: index, // required
                     title: c.name,
+                    color: c.color != null ? Color(c.color) : Colors.grey,
                     // true if dish has this category
                     active: false, // TODO
                     customData: c,
+                    border: Border.all(
+                        color: c.color != null ? Color(c.color) : Colors.grey),
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
                     onPressed: (Item item) {
                       if (item.active) {
                         selectedCategories.add(item.customData);

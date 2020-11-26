@@ -29,12 +29,35 @@ class _ViewDishPageState extends State<ViewDishPage> {
     return Scaffold(
       key: _viewDishKey,
       appBar: AppBar(
-        title: Text(dish.name),
+        automaticallyImplyLeading: false,
+        title: Text("Gericht"),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+              child: Text(
+                "Name",
+                style: TextStyle(color: Colors.black54, fontSize: 16),
+                textAlign: TextAlign.left,
+              )),
+          Padding(
+              padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
+              child: Text(
+                dish.name,
+                style: TextStyle(color: Colors.black, fontSize: 16),
+                textAlign: TextAlign.left,
+              )),
+          Padding(
+              padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+              child: Text(
+                "Notizen",
+                style: TextStyle(color: Colors.black54, fontSize: 16),
+                textAlign: TextAlign.left,
+              )),
+          Padding(
+              padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
               child: SelectableLinkify(
                 style: dish.note.isEmpty
                     ? TextStyle(

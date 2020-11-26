@@ -42,7 +42,7 @@ void main() async {
   initializeDateFormatting('de_DE', null).then((_) => runApp(EssensplanApp()));
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.amber,
+    statusBarColor: Colors.lightGreen,
   ));
 }
 
@@ -79,7 +79,7 @@ class EssensplanApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.amber,
+        primarySwatch: Colors.lightGreen,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.

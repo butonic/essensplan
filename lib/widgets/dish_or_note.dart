@@ -32,6 +32,7 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: GestureDetector(
             child: Text(widget.dish.name,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
