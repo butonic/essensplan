@@ -19,17 +19,20 @@ class CategoryAdapter extends TypeAdapter<Category> {
     return Category(
       name: fields[0] as String,
       id: fields[1] as String,
+      color: fields[2] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Category obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.color);
   }
 
   @override

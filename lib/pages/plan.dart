@@ -46,34 +46,15 @@ class _PlanPageState extends State<PlanPage> {
 
     return Scaffold(
       key: _planKey,
-      /*appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.today),
-          onPressed: () {
-            itemScrollController.scrollTo(
-                index: currentDay,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOutCubic);
-          },
-          tooltip: "Heute", // kommt bei long press
-        ),
-        //title: Text('Planung'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.restaurant_menu),
-            onPressed: () {
-              _selectDish(context,
-                  -1); // TODO this is not used to select a certain day...
-            },
-            tooltip: "Gerichte", // kommt bei long press
-          ),
-        ],
-      ),*/
+      // show an AppBar without tools, so the StatusBar does not cover the list
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 0,
+      ),
       resizeToAvoidBottomInset:
           false, // TODO scroll tapped text area into view?
       body: ScrollablePositionedList.builder(
-          initialScrollIndex:
-              currentDay - 1, // the first row is overshadowed by the status bar
+          initialScrollIndex: currentDay,
           itemCount: 40000,
           itemScrollController: itemScrollController,
           itemPositionsListener: itemPositionsListener,
@@ -152,23 +133,25 @@ class _PlanPageState extends State<PlanPage> {
                     },
             ),
             GestureDetector(
-              child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.category,
-                        color: Colors.black38,
-                      ),
-                      Text(
-                        'Kategorien',
-                        style: Theme.of(context).textTheme.caption,
-                      )
-                    ],
-                  )),
-            ),
+                child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.category,
+                          color: Colors.black38,
+                        ),
+                        Text(
+                          'Kategorien',
+                          style: Theme.of(context).textTheme.caption,
+                        )
+                      ],
+                    )),
+                onTap: () {
+                  _viewCategories(context);
+                }),
           ],
         ),
       ),
@@ -451,5 +434,12 @@ class _PlanPageState extends State<PlanPage> {
   void _viewDish(BuildContext context, Dish dish) async {
     await Navigator.pushNamed(context, '/dishes/view',
         arguments: ViewDishArguments(dish));
+  }
+
+  void _viewCategories(BuildContext context) async {
+    await Navigator.pushNamed(
+      context, '/categories',
+      // arguments: ViewDishArguments(dish)
+    );
   }
 }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:essensplan/pages/view_dish.dart';
-import 'pages/plan.dart';
-import 'pages/dishes.dart';
-import 'pages/edit_dish.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import 'pages/plan.dart';
+import 'pages/dishes.dart';
+import 'pages/categories.dart';
+import 'pages/edit_dish.dart';
 import 'model/category.dart';
 import 'model/day.dart';
 import 'model/dish.dart';
@@ -38,6 +40,10 @@ void main() async {
 
   timeago.setLocaleMessages('de', timeago.DeMessages());
   initializeDateFormatting('de_DE', null).then((_) => runApp(EssensplanApp()));
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.amber,
+  ));
 }
 
 //A page is considered a stateful widget that covers the entire navigation screen.
@@ -53,13 +59,14 @@ class EssensplanApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ober Menu Planner',
+      title: 'Essensplan',
       initialRoute: '/',
       routes: {
         '/': (context) => PlanPage(),
         '/dishes': (context) => DishesPage(),
         '/dishes/view': (context) => ViewDishPage(),
         '/dishes/edit': (context) => EditDishPage(),
+        '/categories': (context) => CategoriesPage(),
       },
       //home: PlanPage(),
       theme: ThemeData(
