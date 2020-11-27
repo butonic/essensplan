@@ -117,7 +117,11 @@ class EditDishPageState extends State<EditDishPage> {
                     active: args.dish.categories.contains(c),
                     customData: c,
                     onPressed: (Item item) {
-                      args.dish.categories.add(item.customData);
+                      if (item.active) {
+                        args.dish.categories.add(item.customData);
+                      } else {
+                        args.dish.categories.remove(item.customData);
+                      }
                     },
 
                     //removeButton: ItemTagsRemoveButton(
