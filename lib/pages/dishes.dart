@@ -90,7 +90,7 @@ class _DishesPageState extends State<DishesPage> {
                         child: TextField(
                           controller: _searchQuery,
                           decoration: const InputDecoration(
-                              hintText: 'Suche nach Name ...',
+                              hintText: 'Suche nach Name oder Notiz ...',
                               border: InputBorder.none,
                               hintStyle:
                                   TextStyle(fontStyle: FontStyle.italic)),
@@ -403,9 +403,13 @@ class _DishesPageState extends State<DishesPage> {
       dishes = dishes.where((d) => d.deleted != true);
     }
 
+    newQuery = newQuery.toLowerCase();
+
     if (newQuery?.isNotEmpty == true) {
-      dishes = dishes
-          .where((e) => e.name.toLowerCase().contains(newQuery.toLowerCase()));
+      dishes = dishes.where((e) {
+        return e.name.toLowerCase().contains(newQuery) ||
+            e.note?.toLowerCase()?.contains(newQuery) == true;
+      });
     }
 
     // if categories have been selected
