@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -36,39 +37,83 @@ class _CategoriesPageState extends State<CategoriesPage> {
             itemCount: list.length,
             itemBuilder: (context, index) {
               Category category = list[index];
-              return ListTile(
-                title: Text(category.name),
-                leading: IconButton(
-                  icon: Icon(Icons.circle),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Select a color'),
-                          content: SingleChildScrollView(
-                            child: BlockPicker(
-                              pickerColor: category.color != null
-                                  ? Color(category.color)
-                                  : Colors.grey,
-                              onColorChanged: (Color color) {
-                                setState(() {
-                                  category.color = color.value;
-                                  Navigator.of(context).pop();
-                                });
-                              },
-                            ),
-                          ),
+              return new Dismissible(
+                  key: ObjectKey(category),
+                  onDismissed: (direction) {
+                    setState(() {
+                      list.removeAt(index);
+                      category.delete();
+                    });
+                  },
+                  child: ListTile(
+                    title: InkWell(
+                        child: Text(category.name),
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Kategorie umbenennen'),
+                                  content: SingleChildScrollView(
+                                    child: Column(children: [
+                                      TextFormField(
+                                        autofocus: true,
+                                        controller: TextEditingController(
+                                            text: category.name),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'Bitte einen namen eingeben';
+                                          }
+                                          return null;
+                                        },
+                                        autovalidateMode:
+                                            AutovalidateMode.always,
+                                        onFieldSubmitted: (newValue) {
+                                          if (newValue.isNotEmpty) {
+                                            setState(() {
+                                              category.name = newValue;
+                                              category.save();
+                                              Navigator.of(context).pop();
+                                            });
+                                          }
+                                        },
+                                      )
+                                    ]),
+                                  ),
+                                );
+                              });
+                        }),
+                    leading: IconButton(
+                      icon: Icon(Icons.circle),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Select a color'),
+                              content: SingleChildScrollView(
+                                child: BlockPicker(
+                                  pickerColor: category.color != null
+                                      ? Color(category.color)
+                                      : Colors.grey,
+                                  onColorChanged: (Color color) {
+                                    setState(() {
+                                      category.color = color.value;
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                  color: category.color != null
-                      ? Color(category.color)
-                      : Colors.grey,
-                ),
-                trailing: Icon(Icons.drag_handle),
-              );
+                      color: category.color != null
+                          ? Color(category.color)
+                          : Colors.grey,
+                    ),
+                    trailing: Icon(Icons.drag_handle),
+                  ));
             },
           );
         },
