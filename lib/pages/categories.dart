@@ -31,23 +31,54 @@ class _CategoriesPageState extends State<CategoriesPage> {
         builder: (context, Box<Category> box, child) {
           Map<dynamic, Category> raw = box.toMap();
           List list = raw.values.toList();
-
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              Category category = list[index];
-              return new Dismissible(
-                  key: ObjectKey(category),
-                  onDismissed: (direction) {
-                    setState(() {
-                      list.removeAt(index);
-                      category.delete();
-                    });
-                  },
-                  child: ListTile(
-                    title: InkWell(
-                        child: Text(category.name),
+          list.sort((a, b) {
+            if (a.order == null || b.order == null) {
+              return 0;
+            } else {
+              return a.order.compareTo(b.order);
+            }
+          });
+          List<Widget> children = List.generate(
+              list.length,
+              (i) => Dismissible(
+                    key: ObjectKey(list[i]),
+                    onDismissed: (direction) {
+                      setState(() {
+                        list.removeAt(i);
+                        list[i].delete();
+                      });
+                    },
+                    child: ListTile(
+                        leading: IconButton(
+                          icon: Icon(Icons.circle),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Select a color'),
+                                  content: SingleChildScrollView(
+                                    child: BlockPicker(
+                                      pickerColor: list[i].color != null
+                                          ? Color(list[i].color)
+                                          : Colors.grey,
+                                      onColorChanged: (Color color) {
+                                        setState(() {
+                                          list[i].color = color.value;
+                                          Navigator.of(context).pop();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          color: list[i].color != null
+                              ? Color(list[i].color)
+                              : Colors.grey,
+                        ),
+                        title: Text(list[i].name),
                         onTap: () {
                           showDialog(
                               context: context,
@@ -59,7 +90,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                       TextFormField(
                                         autofocus: true,
                                         controller: TextEditingController(
-                                            text: category.name),
+                                            text: list[i].name),
                                         validator: (value) {
                                           if (value.isEmpty) {
                                             return 'Bitte einen namen eingeben';
@@ -71,8 +102,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                         onFieldSubmitted: (newValue) {
                                           if (newValue.isNotEmpty) {
                                             setState(() {
-                                              category.name = newValue;
-                                              category.save();
+                                              list[i].name = newValue;
+                                              list[i].save();
                                               Navigator.of(context).pop();
                                             });
                                           }
@@ -83,37 +114,26 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 );
                               });
                         }),
-                    leading: IconButton(
-                      icon: Icon(Icons.circle),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Select a color'),
-                              content: SingleChildScrollView(
-                                child: BlockPicker(
-                                  pickerColor: category.color != null
-                                      ? Color(category.color)
-                                      : Colors.grey,
-                                  onColorChanged: (Color color) {
-                                    setState(() {
-                                      category.color = color.value;
-                                      Navigator.of(context).pop();
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      color: category.color != null
-                          ? Color(category.color)
-                          : Colors.grey,
-                    ),
-                    trailing: Icon(Icons.drag_handle),
                   ));
+          return ReorderableListView(
+            children: children,
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                // first reorder our list
+                if (oldIndex < newIndex) {
+                  newIndex -= 1;
+                }
+                final element = list.removeAt(oldIndex);
+                list.insert(newIndex, element);
+
+                // then update order of all categories that changed
+                for (int i = 0; i < list.length; i++) {
+                  if (list[i].order != i) {
+                    list[i].order = i;
+                    list[i].save();
+                  }
+                }
+              });
             },
           );
         },

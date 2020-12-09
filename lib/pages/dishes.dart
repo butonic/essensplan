@@ -286,6 +286,14 @@ class _DishesPageState extends State<DishesPage> {
   }
 
   Widget _buildCategoryDropdown() {
+    List categories = Hive.box<Category>('categoryBox').toMap().values.toList();
+    categories.sort((a, b) {
+      if (a.order == null || b.order == null) {
+        return 0;
+      } else {
+        return a.order.compareTo(b.order);
+      }
+    });
     return Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
@@ -293,9 +301,9 @@ class _DishesPageState extends State<DishesPage> {
             Expanded(
               child: Tags(
                 key: _dishesTagStateKey,
-                itemCount: Hive.box<Category>('categoryBox').length, // required
+                itemCount: categories.length, // required
                 itemBuilder: (int index) {
-                  final c = Hive.box<Category>('categoryBox').getAt(index);
+                  final c = categories[index];
 
                   return ItemTags(
                     // Each ItemTags must contain a Key. Keys allow Flutter to

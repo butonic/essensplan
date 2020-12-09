@@ -13,10 +13,14 @@ class Category extends HiveObject {
   @HiveField(2)
   int color;
 
+  @HiveField(3)
+  int order;
+
   Category({
     this.name,
     this.id,
     this.color,
+    this.order,
   });
   String operator [](String id) {
     return name;

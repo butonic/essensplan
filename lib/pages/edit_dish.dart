@@ -95,8 +95,12 @@ class EditDishPageState extends State<EditDishPage> {
                       .toList(),
                   onSubmitted: (String str) {
                     var cat = args.categories.values.firstWhere(
-                        ((e) => e.name == str),
-                        orElse: () => new Category(name: str, id: Uuid().v4()));
+                      ((e) => e.name == str),
+                      orElse: () => new Category(
+                          name: str,
+                          id: Uuid().v4(),
+                          order: args.categories.length), // add as last item
+                    );
                     // Add item to the data source.
                     setState(() {
                       // required
