@@ -52,6 +52,13 @@ class EditDishPageState extends State<EditDishPage> {
                       hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       hintText: 'Name des Gerichts eingeben',
                     ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Bitte einen namen eingeben';
+                      }
+                      return null;
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     onSaved: (String value) {
                       args.dish.name = value;
                     })),
