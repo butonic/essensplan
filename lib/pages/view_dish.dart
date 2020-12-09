@@ -32,62 +32,66 @@ class _ViewDishPageState extends State<ViewDishPage> {
         automaticallyImplyLeading: false,
         title: Text("Gericht"),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-              padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-              child: Text(
-                "Name",
-                style: TextStyle(color: Colors.black54, fontSize: 16),
-                textAlign: TextAlign.left,
-              )),
-          Padding(
-              padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
-              child: Text(
-                dish.name,
-                style: TextStyle(color: Colors.black, fontSize: 16),
-                textAlign: TextAlign.left,
-              )),
-          Padding(
-              padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-              child: Text(
-                "Notizen",
-                style: TextStyle(color: Colors.black54, fontSize: 16),
-                textAlign: TextAlign.left,
-              )),
-          Padding(
-              padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
-              child: SelectableLinkify(
-                style: dish.note.isEmpty
-                    ? TextStyle(
-                        color: Colors.black45, fontStyle: FontStyle.italic)
-                    : null,
-                text: dish.note.isEmpty ? "Keine Notiz" : dish.note,
-                onOpen: (link) async {
-                  if (await canLaunch(link.url)) {
-                    await launch(link.url);
-                  } else {
-                    throw 'Konnte $link nicht öffnen';
-                  }
-                },
-              )),
-          Divider(),
-          Tags(
-            itemCount: dish.categories.length,
-            itemBuilder: (int index) {
-              final c = dish.categories.elementAt(index);
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: Text(
+                  "Name",
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
+                child: Text(
+                  dish.name,
+                  style: TextStyle(color: Colors.black, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: Text(
+                  "Notizen",
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
+                child: SelectableLinkify(
+                  style: dish.note.isEmpty
+                      ? TextStyle(
+                          color: Colors.black45, fontStyle: FontStyle.italic)
+                      : null,
+                  text: dish.note.isEmpty ? "Keine Notiz" : dish.note,
+                  onOpen: (link) async {
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw 'Konnte $link nicht öffnen';
+                    }
+                  },
+                )),
+            Divider(),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                child: Tags(
+                  itemCount: dish.categories.length,
+                  itemBuilder: (int index) {
+                    final c = dish.categories.elementAt(index);
 
-              return ItemTags(
-                key: Key(index.toString()),
-                index: index,
-                title: c.name,
-                customData: c,
-                pressEnabled: false,
-              );
-            },
-          ),
-        ],
+                    return ItemTags(
+                      key: Key(index.toString()),
+                      index: index,
+                      title: c.name,
+                      customData: c,
+                      pressEnabled: false,
+                    );
+                  },
+                )),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
