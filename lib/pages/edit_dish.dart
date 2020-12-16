@@ -125,9 +125,18 @@ class EditDishPageState extends State<EditDishPage> {
                       //key: Key(item.name),
                       index: index, // required
                       title: c.name,
-                      color: c.color != null ? Color(c.color) : Colors.grey,
+                      color: Colors.white,
+                      textColor:
+                          c.color != null ? Color(c.color) : Colors.black,
+                      border: Border.all(
+                          color:
+                              c.color != null ? Color(c.color) : Colors.grey),
                       // true if dish has this category
                       active: args.dish.categories.contains(c),
+                      textActiveColor: Colors.white,
+                      activeColor:
+                          c.color != null ? Color(c.color) : Colors.grey,
+
                       customData: c,
                       onPressed: (Item item) {
                         if (item.active) {

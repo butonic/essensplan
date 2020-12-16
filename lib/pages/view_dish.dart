@@ -85,6 +85,12 @@ class _ViewDishPageState extends State<ViewDishPage> {
                       key: Key(index.toString()),
                       index: index,
                       title: c.name,
+                      active: true,
+                      activeColor:
+                          c.color != null ? Color(c.color) : Colors.grey,
+                      border: Border.all(
+                          color:
+                              c.color != null ? Color(c.color) : Colors.grey),
                       customData: c,
                       pressEnabled: false,
                     );
