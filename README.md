@@ -4,6 +4,7 @@ A simple menu planner in flutter.
 
 
 ## Building
+Update version number in pubspec.yaml
 `flutter build apk --target-platform android-arm64`
 
 ## Updating via adb

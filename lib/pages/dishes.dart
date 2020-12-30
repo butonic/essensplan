@@ -22,9 +22,10 @@ class DishesPage extends StatefulWidget {
 final GlobalKey<TagsState> _dishesTagStateKey = GlobalKey<TagsState>();
 
 class _DishesPageState extends State<DishesPage> {
-  static final GlobalKey<ScaffoldState> _dishesKey =
-      new GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> _dishesKey = GlobalKey<ScaffoldState>();
   String query = '';
+
+  Dish scrollTarget;
 
   TextEditingController _searchQuery;
 
@@ -38,27 +39,29 @@ class _DishesPageState extends State<DishesPage> {
   @override
   void initState() {
     super.initState();
+
     // load all dishes
-    filteredDishes = new List<Dish>();
+    filteredDishes = <Dish>[];
     setState(() {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
           .where((dish) => dish.deleted != true && dish.name != null));
       filteredDishes.sort((d1, d2) {
-        return d1.name.compareTo(d2.name);
+        return d1.name.toLowerCase().compareTo(d2.name.toLowerCase());
       });
     });
 
-    _searchQuery = new TextEditingController();
-    selectedCategories = new List<Category>();
+    _searchQuery = TextEditingController();
+    selectedCategories = <Category>[];
   }
   // TODO on destroy remove the initialized vars?
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("Gericht auswählen"),
+          title: Text('Gericht auswählen'),
           actions: <Widget>[
             //IconButton(
             //  icon: Icon(Icons.developer_mode),
@@ -67,7 +70,7 @@ class _DishesPageState extends State<DishesPage> {
             //  },
             //),
           ]),
-      body: new Form(
+      body: Form(
         key: _dishesKey,
         child: Split(
           axis: Axis.vertical,
@@ -109,7 +112,7 @@ class _DishesPageState extends State<DishesPage> {
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
                   child: Text(
-                    "Filtern nach Kategorien", // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
+                    'Filtern nach Kategorien', // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                     textAlign: TextAlign.left,
                   )),
@@ -117,9 +120,10 @@ class _DishesPageState extends State<DishesPage> {
             ]),
             //Expanded(
             //  child: filteredDishes != null && filteredDishes.length > 0
-            filteredDishes != null && filteredDishes.length > 0
-                ? new DishList(
+            filteredDishes != null && filteredDishes.isNotEmpty
+                ? DishList(
                     dishes: filteredDishes,
+                    scrollTarget: scrollTarget,
                     onTap: _selectedDish,
                     onLongPress: _editDish,
                     onDismissed: (BuildContext context,
@@ -137,13 +141,13 @@ class _DishesPageState extends State<DishesPage> {
                       // Show a snackbar. This snackbar could also contain "Undo" actions.
                       Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text(
-                              "${dish.name == null ? dish.note : dish.name} ${dish.deleted ? 'Gelöscht' : 'Wiederhergestellt'}")));
+                              "${dish.name ?? dish.note} ${dish.deleted ? 'Gelöscht' : 'Wiederhergestellt'}")));
                     },
                   )
                 : Hive.box<Dish>('dishBox').values == null
-                    ? new Center(child: new CircularProgressIndicator())
-                    : new Center(
-                        child: new Text("Kein Treffer"),
+                    ? Center(child: CircularProgressIndicator())
+                    : Center(
+                        child: Text('Kein Treffer'),
                       ),
             //),
           ],
@@ -173,8 +177,8 @@ class _DishesPageState extends State<DishesPage> {
                       SizedBox(width: 4),
                       Text(
                         andFilterCategories
-                            ? "Alle Kategorien"
-                            : "Eine der Kategorien",
+                            ? 'Alle Kategorien'
+                            : 'Eine der Kategorien',
                         style: Theme.of(context).textTheme.caption,
                       )
                     ],
@@ -226,65 +230,6 @@ class _DishesPageState extends State<DishesPage> {
     });
   }
 
-  //Create a app bar title widget
-  Widget _buildTitle(BuildContext context) {
-    return _buildSearchField();
-    /*
-    var horizontalTitleAlignment =
-        Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
-
-    return new InkWell(
-      child: new Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: horizontalTitleAlignment,
-          children: <Widget>[
-            new Text(
-              'Gerichte',
-              style: new TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-    );
-    */
-  }
-
-  //Creating search box widget
-  Widget _buildSearchField() {
-    return new Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                //cursorColor: Colors.white,
-                controller: _searchQuery,
-                //autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Suchen...',
-                  border: InputBorder.none,
-                  //hintStyle: const TextStyle(color: Colors.white70),
-                ),
-                //style: const TextStyle(
-                //color: Colors.white,
-                //fontSize: 16.0,
-                //),
-                onChanged: (String q) {
-                  updateSearchQuery(q, selectedCategories);
-                },
-              ),
-            ),
-            _searchQuery.text.isEmpty
-                ? Container()
-                : IconButton(
-                    icon: Icon(Icons.clear), onPressed: _clearSearchQuery)
-          ],
-        ));
-  }
-
   Widget _buildCategoryDropdown() {
     List categories = Hive.box<Category>('categoryBox').toMap().values.toList();
     categories.sort((a, b) {
@@ -309,12 +254,11 @@ class _DishesPageState extends State<DishesPage> {
                     // Each ItemTags must contain a Key. Keys allow Flutter to
                     // uniquely identify widgets.
                     key: Key(index.toString()),
-                    //key: Key(item.name),
                     index: index, // required
                     title: c.name,
                     color: c.color != null ? Color(c.color) : Colors.grey,
                     // true if dish has this category
-                    active: false, // TODO
+                    active: false,
                     customData: c,
                     border: Border.all(
                         color: c.color != null ? Color(c.color) : Colors.grey),
@@ -452,7 +396,7 @@ class _DishesPageState extends State<DishesPage> {
   }
 
   //Filtering the list item with found match string.
-  filterList(Dish dish, String searchQuery) {
+  void filterList(Dish dish, String searchQuery) {
     setState(() {
       if (dish.name.toLowerCase().contains(searchQuery.toLowerCase())) {
         filteredDishes.add(dish);
@@ -465,15 +409,16 @@ class _DishesPageState extends State<DishesPage> {
   }
 
   void _newDish(BuildContext context) async {
-    var d = new Dish();
-    d.categories = new HiveList(Hive.box<Category>('categoryBox'));
-    d.tags = new HiveList(Hive.box<Tag>('tagBox'));
+    var d = Dish();
+    d.categories = HiveList(Hive.box<Category>('categoryBox'));
+    d.tags = HiveList(Hive.box<Tag>('tagBox'));
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
         arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
 
     if (editedArgs is EditDishArguments) {
-      Hive.box<Dish>('dishBox').add(editedArgs.dish);
+      await Hive.box<Dish>('dishBox').add(editedArgs.dish);
       _clearSearchQuery();
+      scrollTarget = d;
     }
   }
 
@@ -482,8 +427,9 @@ class _DishesPageState extends State<DishesPage> {
         arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
 
     if (editedArgs is EditDishArguments) {
-      editedArgs.dish.save();
+      await editedArgs.dish.save();
       _clearSearchQuery();
+      // TODO scroll to dish? may not be necessary
     }
   }
 }

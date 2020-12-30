@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../model/dish.dart';
 
 class EditNotePage extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -21,6 +22,8 @@ class EditNoteForm extends StatefulWidget {
 class EditNoteFormState extends State<EditNoteForm> {
   final _formKey = GlobalKey<FormState>();
   Dish note = Dish();
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,

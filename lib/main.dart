@@ -16,11 +16,6 @@ import 'model/day.dart';
 import 'model/dish.dart';
 import 'model/tag.dart';
 
-Box<Category> _categoryBox;
-Box<Day> _dayBox;
-Box<Dish> _dishBox;
-Box<Tag> _tagBox;
-
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
@@ -32,14 +27,17 @@ void main() async {
   Hive.registerAdapter(DishAdapter());
   Hive.registerAdapter(TagAdapter());
 
-  _categoryBox = await Hive.openBox<Category>('categoryBox');
-  _dayBox = await Hive.openBox<Day>('dayBox');
-  _dishBox = await Hive.openBox<Dish>('dishBox');
-  _tagBox = await Hive.openBox<Tag>('tagBox');
-  Intl.defaultLocale = "de_DE";
+  // open hive boxes
+  await Hive.openBox<Category>('categoryBox');
+  await Hive.openBox<Day>('dayBox');
+  await Hive.openBox<Dish>('dishBox');
+  await Hive.openBox<Tag>('tagBox');
+
+  Intl.defaultLocale = 'de_DE';
 
   timeago.setLocaleMessages('de', timeago.DeMessages());
-  initializeDateFormatting('de_DE', null).then((_) => runApp(EssensplanApp()));
+  await initializeDateFormatting('de_DE', null)
+      .then((_) => runApp(EssensplanApp()));
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.lightGreen,

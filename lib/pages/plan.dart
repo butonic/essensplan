@@ -24,18 +24,17 @@ class DragData {
 }
 
 class _PlanPageState extends State<PlanPage> {
-  static final GlobalKey<ScaffoldState> _planKey =
-      new GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> _planKey = GlobalKey<ScaffoldState>();
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
-  final epoch = new DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+  final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
   int selectedDay = dayUnselected;
 
   @override
   Widget build(BuildContext context) {
-    var currentDay = new DateTime.now()
+    var currentDay = DateTime.now()
         .toUtc()
         .difference(epoch)
         .inDays; // ~18k -> 20k*2 = 40k for now
@@ -118,14 +117,12 @@ class _PlanPageState extends State<PlanPage> {
                         var dayBox = Hive.box<Day>('dayBox');
                         var dm = dayBox.get(selectedDay);
                         if (dm == null) {
-                          dm = new Day();
+                          dm = Day();
                           dayBox.put(selectedDay, dm);
                         }
-                        if (dm.entries == null) {
-                          dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
-                        }
-                        var note = new Dish(
-                            note: ""); // a hint is rendered for an empty string
+                        dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
+                        var note = Dish(
+                            note: ''); // a hint is rendered for an empty string
                         Hive.box<Dish>('dishBox').add(note);
                         dm.entries.add(note);
                         dm.save();
@@ -193,7 +190,7 @@ class _PlanPageState extends State<PlanPage> {
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: Text(dish.name == null ? dish.note : dish.name,
+              child: Text(dish.name ?? dish.note,
                   style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -206,8 +203,8 @@ class _PlanPageState extends State<PlanPage> {
   // generate item for day
   Widget item(BuildContext context, int day) {
     final date = epoch.add(Duration(days: day));
-    Day dm = Hive.box<Day>('dayBox').get(day);
-    List<Widget> dishes = [];
+    var dm = Hive.box<Day>('dayBox').get(day);
+    var dishes = <Widget>[];
 
     if (dm != null) {
       // for loop with item index
@@ -217,7 +214,7 @@ class _PlanPageState extends State<PlanPage> {
         // https://stackoverflow.com/a/64011994
         dishes.add(DragTarget<DragData>(
           builder: (context, candidates, rejects) {
-            return candidates.length > 0
+            return candidates.isNotEmpty
                 ? _buildDropPreview(
                     context, candidates[0].source.entries[candidates[0].index])
                 : Container(
@@ -239,17 +236,14 @@ class _PlanPageState extends State<PlanPage> {
             });
           },
         ));
-        final Dish dish = dm.entries[i];
+        final dish = dm.entries[i];
         dishes.add(LongPressDraggable<DragData>(
             data: DragData(dm, i),
             //dragAnchor: DragAnchor.pointer, // better leave child so we can see what we are dragging
             feedback: Card(
                 child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: Text(
-                  dm.entries[i].name == null
-                      ? dm.entries[i].note
-                      : dm.entries[i].name,
+              child: Text(dm.entries[i].name ?? dm.entries[i].note,
                   style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -260,10 +254,10 @@ class _PlanPageState extends State<PlanPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child:
-                      Text("", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('', style: TextStyle(fontWeight: FontWeight.bold)),
                 )),
             child: Dismissible(
-              key: ValueKey("day-$day[${dish.hashCode}]"),
+              key: ValueKey('day-$day[${dish.hashCode}]'),
               onDismissed: (direction) {
                 setState(() {
                   dm.entries.removeAt(i);
@@ -272,8 +266,7 @@ class _PlanPageState extends State<PlanPage> {
                 });
                 // Show a snackbar. This snackbar could also contain "Undo" actions.
                 _planKey.currentState.showSnackBar(SnackBar(
-                    content: Text(
-                        "${dish.name == null ? dish.note : dish.name} gelöscht")));
+                    content: Text('${dish.name ?? dish.note} gelöscht')));
               },
               child:
                   /*SizedBox(
@@ -284,7 +277,7 @@ class _PlanPageState extends State<PlanPage> {
                       onTap: (context, dish) {
                         // unfocus current text input
                         // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        var currentFocus = FocusScope.of(context);
                         if (!currentFocus.hasPrimaryFocus) {
                           currentFocus.unfocus();
                         }
@@ -305,8 +298,7 @@ class _PlanPageState extends State<PlanPage> {
                               feedback: Card(
                                   child: Padding(
                                 padding: const EdgeInsets.all(4.0),
-                                child: Text(
-                                    dish.name == null ? dish.note : dish.name,
+                                child: Text(dish.name ?? dish.note,
                                     style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.black,
@@ -321,7 +313,7 @@ class _PlanPageState extends State<PlanPage> {
     }
     dishes.add(DragTarget<DragData>(
       builder: (context, candidates, rejects) {
-        return candidates.length > 0
+        return candidates.isNotEmpty
             ? _buildDropPreview(
                 context, candidates[0].source.entries[candidates[0].index])
             : Container(
@@ -333,12 +325,10 @@ class _PlanPageState extends State<PlanPage> {
       onAccept: (data) {
         setState(() {
           if (dm == null) {
-            dm = new Day();
+            dm = Day();
             Hive.box<Day>('dayBox').put(day, dm);
           }
-          if (dm.entries == null) {
-            dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
-          }
+          dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
           dm.entries.insert(dm.entries.length, data.source.entries[data.index]);
           if (dm == data.source && dm.entries.length < data.index) {
             data.source.entries.removeAt(data.index + 1);
@@ -358,7 +348,7 @@ class _PlanPageState extends State<PlanPage> {
           )),
         ),
         child: ListTile(
-          key: ValueKey("day-$day"),
+          key: ValueKey('day-$day'),
           selected: day == selectedDay,
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -389,7 +379,7 @@ class _PlanPageState extends State<PlanPage> {
           onTap: () {
             // unfocus current text input
             // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-            FocusScopeNode currentFocus = FocusScope.of(context);
+            var currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus) {
               currentFocus.unfocus();
             }
@@ -419,12 +409,10 @@ class _PlanPageState extends State<PlanPage> {
         var dayBox = Hive.box<Day>('dayBox');
         var dm = dayBox.get(day);
         if (dm == null) {
-          dm = new Day();
+          dm = Day();
           dayBox.put(day, dm);
         }
-        if (dm.entries == null) {
-          dm.entries = new HiveList(Hive.box<Dish>('dishBox'));
-        }
+        dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
         dm.entries.add(result);
         dm.save();
       });

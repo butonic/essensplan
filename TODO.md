@@ -44,6 +44,7 @@ Gerichte Liste
         - aus liste auswählen?
         - kann zb auch `vegetarisch` sein
       - [ ] wann das letzte / nächste mal
+    - nach hinzufügen zum angelegten gericht scrollen
   - kategorien (hauptspeise, dessert ... suppe, backwaren)
   - medien feld für bilder / pdf / anhänge
   - beim speichern warnen wenn keine kategorie angegeben wurde (otional)

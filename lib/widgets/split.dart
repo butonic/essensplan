@@ -115,7 +115,7 @@ class _SplitState extends State<Split> {
     double _minSizeForIndex(int index) {
       if (widget.minSizes == null) return 0.0;
 
-      double totalMinSize = 0;
+      var totalMinSize = 0.0;
       for (var minSize in widget.minSizes) {
         totalMinSize += minSize;
       }
@@ -139,13 +139,13 @@ class _SplitState extends State<Split> {
 
     double _sizeForIndex(int index) => availableSize * fractions[index];
 
-    double fractionDeltaRequired = 0.0;
-    double fractionDeltaAvailable = 0.0;
+    var fractionDeltaRequired = 0.0;
+    var fractionDeltaAvailable = 0.0;
 
     double deltaFromMinimumSize(int index) =>
         fractions[index] - _minFractionForIndex(index);
 
-    for (int i = 0; i < fractions.length; ++i) {
+    for (var i = 0; i < fractions.length; ++i) {
       final delta = deltaFromMinimumSize(i);
       if (delta < 0) {
         fractionDeltaRequired -= delta;
@@ -159,10 +159,10 @@ class _SplitState extends State<Split> {
       // The min size constraints for children are scaled so it is always
       // possible to meet them. A scaleFactor greater than 1 would indicate that
       // it is impossible to meet the constraints.
-      double scaleFactor = fractionDeltaRequired / fractionDeltaAvailable;
+      var scaleFactor = fractionDeltaRequired / fractionDeltaAvailable;
       assert(scaleFactor <= 1 + defaultEpsilon);
       scaleFactor = math.min(scaleFactor, 1.0);
-      for (int i = 0; i < fractions.length; ++i) {
+      for (var i = 0; i < fractions.length; ++i) {
         final delta = deltaFromMinimumSize(i);
         if (delta < 0) {
           // This is equivalent to adding delta but avoids rounding error.
@@ -245,7 +245,7 @@ class _SplitState extends State<Split> {
     }
 
     final children = <Widget>[];
-    for (int i = 0; i < widget.children.length; i++) {
+    for (var i = 0; i < widget.children.length; i++) {
       children.addAll([
         SizedBox(
           width: isHorizontal ? sizes[i] : width,

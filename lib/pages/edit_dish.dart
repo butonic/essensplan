@@ -23,6 +23,7 @@ final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
 class EditDishPageState extends State<EditDishPage> {
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     final EditDishArguments args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
@@ -39,7 +40,7 @@ class EditDishPageState extends State<EditDishPage> {
               Padding(
                   padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
                   child: Text(
-                    "Name",
+                    'Name',
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                     textAlign: TextAlign.left,
                   )),
@@ -66,7 +67,7 @@ class EditDishPageState extends State<EditDishPage> {
               Padding(
                   padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
                   child: Text(
-                    "Notizen",
+                    'Notizen',
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                     textAlign: TextAlign.left,
                   )),
@@ -98,7 +99,7 @@ class EditDishPageState extends State<EditDishPage> {
                     onSubmitted: (String str) {
                       var cat = args.categories.values.firstWhere(
                         ((e) => e.name == str),
-                        orElse: () => new Category(
+                        orElse: () => Category(
                             name: str,
                             id: Uuid().v4(),
                             order: args.categories.length), // add as last item

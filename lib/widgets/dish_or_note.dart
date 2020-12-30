@@ -20,7 +20,7 @@ class DishOrNoteWidget extends StatefulWidget {
 }
 
 class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
-  Widget text = Text("Empty");
+  Widget text = Text('Empty');
 
   @override
   Widget build(BuildContext context) {

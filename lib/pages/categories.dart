@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -20,6 +19,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   Color currentColor = Colors.limeAccent;
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // show an AppBar without tools, so the StatusBar does not cover the list
@@ -29,7 +29,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
       body: ValueListenableBuilder(
         builder: (context, Box<Category> box, child) {
-          Map<dynamic, Category> raw = box.toMap();
+          var raw = box.toMap();
           List list = raw.values.toList();
           list.sort((a, b) {
             if (a.order == null || b.order == null) {
@@ -38,7 +38,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               return a.order.compareTo(b.order);
             }
           });
-          List<Widget> children = List.generate(
+          var children = List.generate(
               list.length,
               (i) => Dismissible(
                     key: ObjectKey(list[i]),
@@ -127,7 +127,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 list.insert(newIndex, element);
 
                 // then update order of all categories that changed
-                for (int i = 0; i < list.length; i++) {
+                for (var i = 0; i < list.length; i++) {
                   if (list[i].order != i) {
                     list[i].order = i;
                     list[i].save();

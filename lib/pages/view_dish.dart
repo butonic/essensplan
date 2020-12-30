@@ -17,10 +17,11 @@ class ViewDishPage extends StatefulWidget {
 
 class _ViewDishPageState extends State<ViewDishPage> {
   static final GlobalKey<ScaffoldState> _viewDishKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   Dish dish;
 
+  @override
   Widget build(BuildContext context) {
     if (dish == null) {
       final ViewDishArguments args = ModalRoute.of(context).settings.arguments;
@@ -30,7 +31,7 @@ class _ViewDishPageState extends State<ViewDishPage> {
       key: _viewDishKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Gericht"),
+        title: Text('Gericht'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -39,7 +40,7 @@ class _ViewDishPageState extends State<ViewDishPage> {
             Padding(
                 padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
                 child: Text(
-                  "Name",
+                  'Name',
                   style: TextStyle(color: Colors.black54, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
@@ -53,7 +54,7 @@ class _ViewDishPageState extends State<ViewDishPage> {
             Padding(
                 padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
                 child: Text(
-                  "Notizen",
+                  'Notizen',
                   style: TextStyle(color: Colors.black54, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
@@ -64,7 +65,7 @@ class _ViewDishPageState extends State<ViewDishPage> {
                       ? TextStyle(
                           color: Colors.black45, fontStyle: FontStyle.italic)
                       : null,
-                  text: dish.note.isEmpty ? "Keine Notiz" : dish.note,
+                  text: dish.note.isEmpty ? 'Keine Notiz' : dish.note,
                   onOpen: (link) async {
                     if (await canLaunch(link.url)) {
                       await launch(link.url);
@@ -123,6 +124,6 @@ Future _editDish(BuildContext context, Dish d) async {
       arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
 
   if (editedArgs is EditDishArguments) {
-    editedArgs.dish.save();
+    await editedArgs.dish.save();
   }
 }
