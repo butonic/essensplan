@@ -1,3 +1,42 @@
+10.04.2021
+==========
+
+Reihenfolge der tags
+--------------------
+
+Reihenfolge überall konsistent:
+- im filter
+- beim anlegen
+- anzeige unter den Gericht namen
+- in der verwaltung
+  - hier wird festgelegt wie die reihenfolge sein soll
+  - nur manuell sortieren per dnd
+
+Gerichteliste
+-------------
+- Namen von gerichten nicht mit ... abkürzen, sondern umbrechen
+- Statt Monaten/Jahren NUR in Tagen angeben
+- AAAABER statt stunden: Heute, Morgen und Gestern
+- Sortierung nach
+  - Name
+  - Tagen (Frage beantworten: Was hab ich am allerlängsten nicht mehr gegessen?)
+    - erst die die man schon mal gegessen hat, beginnend mit am längsten her
+    - immer jünger werdend, bis in zukunft geplant
+    - Noch nie gegessen ganz unten?
+  - Zufall: wass soll ich denn mal planen?
+
+Farben an kategorien
+--------------------
+Sind bei updates kaputtgegangen
+- andere farbpalette
+- customizable via picker
+
+Notizen lassen sich schwer verschieben, Gerichte lassen sich besser verschieben. Warum.
+
+
+alt
+===
+
 2 Screens
 
 burger menü:
@@ -39,8 +78,8 @@ Gerichte Liste
     - Liste mit
       - sortieren nach eigenschaft mit custom compare() https://stackoverflow.com/a/55856231
       - [ ] name
-      - [ ] (zutaten) tags
-      - [ ] freitext zum anzeigen wenn man auf das gericht klickt
+      - [ ] ~~~(zutaten) tags~~~
+      - [ ] ~~~freitext zum anzeigen wenn man auf das gericht klickt~~~
         - aus liste auswählen?
         - kann zb auch `vegetarisch` sein
       - [ ] wann das letzte / nächste mal
