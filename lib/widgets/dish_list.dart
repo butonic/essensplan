@@ -117,7 +117,7 @@ class DishList extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
                       textWidthBasis: TextWidthBasis.parent,
-                      maxLines: 1,
+                      maxLines: 2,
                       style: TextStyle(
                         fontSize: 16,
                         decoration: dishes[index].deleted != true
