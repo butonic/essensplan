@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import './daysago.dart';
 import '../model/day.dart';
 import '../model/dish.dart';
 import '../callbacks/dish.dart';
@@ -77,14 +77,9 @@ class DishList extends StatelessWidget {
       orElse: () => null,
     );
 
-    Text dateText;
+    Widget dateText;
     if (lastCookedDay != null) {
-      // TODO sind nur tage, wochen, monate und jahre
-      // timeago forken und PR mit flags ob sekunden, minuten, stunden, tage ...
-      dateText = Text(timeago.format(epoch.add(Duration(days: lastCookedDay)),
-          locale:
-              'de', // TODO Localizations.localeOf(context); braucht localization,
-          allowFromNow: true));
+      dateText = DaysAgo(days: lastCookedDay);
     } else {
       dateText = Text('nie');
     }
@@ -117,7 +112,7 @@ class DishList extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
                       textWidthBasis: TextWidthBasis.parent,
-                      maxLines: 2,
+                      maxLines: 3,
                       style: TextStyle(
                         fontSize: 16,
                         decoration: dishes[index].deleted != true

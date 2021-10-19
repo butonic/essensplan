@@ -49,6 +49,7 @@ class EditDishPageState extends State<EditDishPage> {
                   child: TextFormField(
                       initialValue: args.dish.name,
                       autofocus: true,
+                      maxLines: 3,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
