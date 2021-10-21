@@ -13,10 +13,28 @@ class DaysAgo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO nur Tage + Morgen, Heute, Gestern
-    return Text(timeago.format(epoch.add(Duration(days: days)),
-        locale:
-            'de', // TODO Localizations.localeOf(context); braucht localization,
-        allowFromNow: true));
+    int daysBetween(DateTime from, DateTime to) {
+      from = DateTime(from.year, from.month, from.day);
+      to = DateTime(to.year, to.month, to.day);
+      return (to.difference(from).inHours / 24).floor();
+    }
+
+    final d = epoch.add(Duration(days: days));
+    final n = DateTime.now();
+    final diff = daysBetween(n, d);
+
+    switch (diff) {
+      case -1:
+        return Text('Gestern');
+      case 0:
+        return Text('Heute');
+      case 1:
+        return Text('Morgen');
+      default:
+        if (diff < 0) {
+          return Text('vor ' + (diff * -1).toString() + ' Tagen');
+        }
+        return Text('in ' + diff.toString() + ' Tagen');
+    }
   }
 }

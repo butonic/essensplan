@@ -17,8 +17,8 @@ Gerichteliste
 - Namen von gerichten nicht mit ... abkürzen, sondern umbrechen
   - [x] Beim Anlegen eines Gerichts wird der Name auch nicht umgebrochen
   - [x] In der liste der gerichte
-- Statt Monaten/Jahren NUR in Tagen angeben
-  - AAAABER statt stunden: Heute, Morgen und Gestern
+- [x] Statt Monaten/Jahren NUR in Tagen angeben
+  - [x] AAAABER statt stunden: Heute, Morgen und Gestern
 - Sortierung nach
   - Name
   - Tagen (Frage beantworten: Was hab ich am allerlängsten nicht mehr gegessen?)
