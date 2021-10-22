@@ -21,6 +21,8 @@ class Dish extends HiveObject {
   @HiveField(4)
   bool deleted;
 
+  int lastCookedDay;
+
   Dish({
     this.name,
     this.note,

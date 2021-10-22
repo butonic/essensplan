@@ -35,10 +35,32 @@ class _DishesPageState extends State<DishesPage> {
   bool andFilterCategories = false;
   bool showDeleted = false;
 
+  int currentSortFunction = 0;
+  List<int Function(Dish, Dish)> sortFunctions = [
+    // by name asc
+    (d1, d2) {
+      return d1.name.toLowerCase().compareTo(d2.name.toLowerCase());
+    },
+    // by name desc
+    (d1, d2) {
+      return d2.name.toLowerCase().compareTo(d1.name.toLowerCase());
+    },
+    // by days asc
+    (d1, d2) {
+      return d1.lastCookedDay.compareTo(d2.lastCookedDay);
+    },
+    // by days desc
+    (d1, d2) {
+      return d2.lastCookedDay.compareTo(d1.lastCookedDay);
+    },
+  ];
+
   //getting data from the db
   @override
   void initState() {
     super.initState();
+
+    Function(Dish, Dish) sortBy = sortFunctions[currentSortFunction];
 
     // load all dishes
     filteredDishes = <Dish>[];
@@ -46,9 +68,7 @@ class _DishesPageState extends State<DishesPage> {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
           .where((dish) => dish.deleted != true && dish.name != null));
-      filteredDishes.sort((d1, d2) {
-        return d1.name.toLowerCase().compareTo(d2.name.toLowerCase());
-      });
+      filteredDishes.sort(sortBy);
     });
 
     _searchQuery = TextEditingController();
@@ -75,6 +95,43 @@ class _DishesPageState extends State<DishesPage> {
         child: Split(
           axis: Axis.vertical,
           initialFractions: [.4, .6],
+          minSizes: [150, 100],
+          splitters: [
+            SizedBox(
+                height: 35,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: Text(currentSortFunction == 0
+                          ? 'Name ▲'
+                          : (currentSortFunction == 1
+                              ? 'Name ▼'
+                              : (currentSortFunction == 2
+                                  ? 'Tage ▲'
+                                  : (currentSortFunction == 3
+                                      ? 'Tage ▼'
+                                      : 'Zufällig')))),
+                      onPressed: () {
+                        setState(() {
+                          currentSortFunction++;
+                          if (currentSortFunction >= sortFunctions.length) {
+                            currentSortFunction = -1;
+                            filteredDishes.shuffle();
+                          } else {
+                            filteredDishes
+                                .sort(sortFunctions[currentSortFunction]);
+                          }
+                        });
+
+                        // TODO sort by name, days, random
+                        // default days?
+                      },
+                    ),
+                    Icon(Icons.drag_handle)
+                  ],
+                ))
+          ],
           children: <Widget>[
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               /*Padding(

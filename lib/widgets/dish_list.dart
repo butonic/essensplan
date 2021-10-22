@@ -79,6 +79,7 @@ class DishList extends StatelessWidget {
 
     Widget dateText;
     if (lastCookedDay != null) {
+      dishes[index].lastCookedDay = lastCookedDay;
       dateText = DaysAgo(days: lastCookedDay);
     } else {
       dateText = Text('nie');
