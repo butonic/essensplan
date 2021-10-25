@@ -19,13 +19,13 @@ Gerichteliste
   - [x] In der liste der gerichte
 - [x] Statt Monaten/Jahren NUR in Tagen angeben
   - [x] AAAABER statt stunden: Heute, Morgen und Gestern
-- Sortierung nach
-  - Name
-  - Tagen (Frage beantworten: Was hab ich am allerlängsten nicht mehr gegessen?)
+- [x] Sortierung nach
+  - [x] Name
+  - [x] Tagen (Frage beantworten: Was hab ich am allerlängsten nicht mehr gegessen?)
     - erst die die man schon mal gegessen hat, beginnend mit am längsten her
     - immer jünger werdend, bis in zukunft geplant
     - Noch nie gegessen ganz unten?
-  - Zufall: wass soll ich denn mal planen?
+  - [x] Zufall: wass soll ich denn mal planen?
 
 Farben an kategorien
 --------------------
@@ -34,6 +34,8 @@ Sind bei updates kaputtgegangen
 - customizable via picker
 
 Notizen lassen sich schwer verschieben, Gerichte lassen sich besser verschieben. Warum.
+- notizen haben ein drag handle ... lassen sich nur daran verschieben ...
+- notizen scheinen ein längeres long press zu haben, oder die gerichte können sofort gedraggt werden? aber wie unterscheidet man dann zwischen scrollen und drag?
 
 
 alt

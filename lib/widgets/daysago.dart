@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class DaysAgo extends StatelessWidget {
   final int days;

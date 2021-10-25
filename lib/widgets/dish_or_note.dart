@@ -22,6 +22,8 @@ class DishOrNoteWidget extends StatefulWidget {
 class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
   Widget text = Text('Empty');
 
+  bool editing = false;
+
   @override
   Widget build(BuildContext context) {
     if (widget.dish == null) {
@@ -44,6 +46,12 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
             }),
       ));
     } else if (widget.dish.note != null) {
+      /*if (editing) {*/ // TODO austauschen funktioniert nicht sauber. denn es gibt kein on loose focus
+      // alternative: gleichen Dialog wie editDish nutzen um auch notizen zu bearbeiten?
+      // alternative: long press auf note> eingabefeld unten einblenden
+      //  - die liste bleibt sichtbar, TextField kommt sich nicht mit den drag gestures in die quere
+
+      /*
       text = TextField(
         maxLines: null,
         textAlign: TextAlign.center,
@@ -69,6 +77,28 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
         //  widget.onTap(context, widget.dish);
         //},
       );
+
+        */
+
+      /*
+      } else {
+        */
+      text = Center(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: GestureDetector(
+            child: Text(widget.dish.note,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.black,
+                    decoration: widget.dish.deleted != true
+                        ? TextDecoration.none
+                        : TextDecoration.lineThrough)),
+            onTap: () {
+              widget.onTap(context, widget.dish);
+            }),
+      ));
+      /*}*/
     }
     return text;
     /*return SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:essensplan/pages/view_dish.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -30,6 +31,8 @@ class _PlanPageState extends State<PlanPage> {
       ItemPositionsListener.create();
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
+  PersistentBottomSheetController bottomSheetController;
+
   int selectedDay = dayUnselected;
 
   @override
@@ -50,8 +53,7 @@ class _PlanPageState extends State<PlanPage> {
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
       ),
-      resizeToAvoidBottomInset:
-          false, // TODO scroll tapped text area into view?
+      resizeToAvoidBottomInset: true, // TODO scroll tapped text area into view?
       body: ScrollablePositionedList.builder(
           initialScrollIndex: currentDay,
           itemCount: 40000,
@@ -122,10 +124,13 @@ class _PlanPageState extends State<PlanPage> {
                         }
                         dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
                         var note = Dish(
-                            note: ''); // a hint is rendered for an empty string
+                            note:
+                                'Neue Notiz'); // a hint is rendered for an empty string
                         Hive.box<Dish>('dishBox').add(note);
                         dm.entries.add(note);
                         dm.save();
+                        // TODO fokus & automatisch bearbeiten
+                        _showBottomSheet(context, note);
                       });
                     },
             ),
@@ -200,6 +205,57 @@ class _PlanPageState extends State<PlanPage> {
     );
   }
 
+  void _showBottomSheet(BuildContext context, Dish dish) {
+    bottomSheetController = showBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return /*Padding(
+                              padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom),
+                              child:*/
+            Container(
+          //margin: const EdgeInsets.only(
+          // top: 25, left: 15, right: 15),
+          height: 70,
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.black)),
+            color: Colors.grey[900],
+          ),
+          child: Container(
+              height: 50,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(10)),
+              child: TextField(
+                maxLines: null,
+                textAlign: TextAlign.center,
+                autofocus: true,
+                controller: TextEditingController(text: dish.note),
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.all(4.0),
+                    border: InputBorder.none,
+                    hintText: 'Neue Notiz'),
+                onChanged: (value) {
+                  if (dish.note != value) {
+                    dish.note = value;
+                    dish.save();
+                  }
+                },
+              )),
+          /*)*/
+        );
+      },
+    );
+  }
+
   // generate item for day
   Widget item(BuildContext context, int day) {
     final date = epoch.add(Duration(days: day));
@@ -210,7 +266,7 @@ class _PlanPageState extends State<PlanPage> {
       // for loop with item index
       for (var i = 0; i < dm.entries.length; i++) {
         // the Draggables are in a Column
-        // they need to be interwoven with DragDargets
+        // they need to be interwoven with DragTargets
         // https://stackoverflow.com/a/64011994
         dishes.add(DragTarget<DragData>(
           builder: (context, candidates, rejects) {
@@ -268,46 +324,52 @@ class _PlanPageState extends State<PlanPage> {
                 _planKey.currentState.showSnackBar(SnackBar(
                     content: Text('${dish.name ?? dish.note} gelöscht')));
               },
-              child:
-                  /*SizedBox(
-                  width: double.infinity,
-                  child: */
-                  DishOrNoteWidget(
-                      dish: dish,
-                      onTap: (context, dish) {
-                        // unfocus current text input
-                        // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-                        var currentFocus = FocusScope.of(context);
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (dish.name != null) {
-                          _viewDish(context, dish);
-                        }
-                        setState(() {
-                          if (selectedDay != day) {
-                            selectedDay = day;
-                          }
-                        });
-                      },
-                      noteSuffix: selectedDay != day
-                          ? null
-                          : LongPressDraggable<DragData>(
-                              data: DragData(dm, i),
-                              //dragAnchor: DragAnchor.pointer,
-                              feedback: Card(
-                                  child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Text(dish.name ?? dish.note,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold)),
-                              )),
-                              child: Icon(
-                                Icons.drag_handle,
-                                size: 14,
-                              ))) /*)*/,
+              child: DishOrNoteWidget(
+                  dish: dish,
+                  onTap: (context, dish) {
+                    // unfocus current text input
+                    // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
+                    /*var currentFocus = FocusScope.of(context);
+                    if (!currentFocus.hasPrimaryFocus) {
+                      currentFocus.unfocus();
+                    }
+                    */
+                    var bsc = bottomSheetController;
+                    if (bsc != null) {
+                      bsc.close();
+                      bottomSheetController = null;
+                    }
+                    if (dish.name != null) {
+                      _viewDish(context, dish);
+                    } else {
+                      _showBottomSheet(context, dish);
+                    }
+                    setState(() {
+                      if (selectedDay != day) {
+                        selectedDay = day;
+                      }
+                    });
+                  },
+                  noteSuffix: selectedDay != day
+                      ? null
+                      // TODO notizen fühlen sich anders an / draggen sich anders als gerichte:
+                      // TextInput durch Text ersetzen? dann kann man  mit einem long press nicht sofort den text selektieren
+                      : LongPressDraggable<DragData>(
+                          data: DragData(dm, i),
+                          //dragAnchor: DragAnchor.pointer,
+                          feedback: Card(
+                              child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(dish.name ?? dish.note,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
+                          )),
+                          child: Icon(
+                            Icons.drag_handle,
+                            size: 14,
+                          ))),
             )));
       }
     }
@@ -379,9 +441,14 @@ class _PlanPageState extends State<PlanPage> {
           onTap: () {
             // unfocus current text input
             // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-            var currentFocus = FocusScope.of(context);
+            /*var currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus) {
               currentFocus.unfocus();
+            }*/
+            var bsc = bottomSheetController;
+            if (bsc != null) {
+              bsc.close();
+              bottomSheetController = null;
             }
             setState(() {
               if (selectedDay != day) {
