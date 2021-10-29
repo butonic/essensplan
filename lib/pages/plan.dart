@@ -1,3 +1,4 @@
+import 'package:essensplan/widgets/dish_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -35,6 +36,8 @@ class _PlanPageState extends State<PlanPage> {
 
   int selectedDay = dayUnselected;
 
+  bool showActionButton = true;
+
   @override
   Widget build(BuildContext context) {
     var currentDay = DateTime.now()
@@ -47,142 +50,65 @@ class _PlanPageState extends State<PlanPage> {
     }
 
     return Scaffold(
-      key: _planKey,
-      // show an AppBar without tools, so the StatusBar does not cover the list
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 0,
-      ),
-      resizeToAvoidBottomInset: true, // TODO scroll tapped text area into view?
-      body: ScrollablePositionedList.builder(
-          initialScrollIndex: currentDay,
-          itemCount: 40000,
-          itemScrollController: itemScrollController,
-          itemPositionsListener: itemPositionsListener,
-          itemBuilder: (context, i) => item(context, i)),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.restaurant_menu),
-        onPressed: selectedDay == dayUnselected
-            ? null
-            : () {
-                _selectDish(context, selectedDay);
-              },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: Row(
-          children: [
-            GestureDetector(
-              child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(Icons.today),
-                      Text(
-                        'Heute',
-                        style: Theme.of(context).textTheme.caption,
-                      )
-                    ],
-                  )),
-              onTap: () {
-                itemScrollController.scrollTo(
-                    index: currentDay,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOutCubic);
-                setState(() {
-                  selectedDay = currentDay;
-                });
-              },
-            ),
-            Spacer(),
-            GestureDetector(
-              child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(Icons.note_add),
-                      Text(
-                        'Notiz',
-                        style: Theme.of(context).textTheme.caption,
-                      )
-                    ],
-                  )),
-              onTap: selectedDay == dayUnselected
-                  ? null
-                  : () {
-                      setState(() {
-                        var dayBox = Hive.box<Day>('dayBox');
-                        var dm = dayBox.get(selectedDay);
-                        if (dm == null) {
-                          dm = Day();
-                          dayBox.put(selectedDay, dm);
-                        }
-                        dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
-                        var note = Dish(
-                            note:
-                                'Neue Notiz'); // a hint is rendered for an empty string
-                        Hive.box<Dish>('dishBox').add(note);
-                        dm.entries.add(note);
-                        dm.save();
-                        // TODO fokus & automatisch bearbeiten
-                        _showBottomSheet(context, note);
-                      });
-                    },
-            ),
-            GestureDetector(
-                child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(
-                          Icons.category,
-                          color: Colors.black38,
-                        ),
-                        Text(
-                          'Kategorien',
-                          style: Theme.of(context).textTheme.caption,
-                        )
-                      ],
-                    )),
-                onTap: () {
-                  _viewCategories(context);
-                }),
-          ],
+        key: _planKey,
+        // show an AppBar without tools, so the StatusBar does not cover the list
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 0,
         ),
-      ),
-      /*
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNav,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            title: Text("Kalender"),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.food_bank),
-            title: Text("Gerichte"),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            title: Text("Kategorien"),
-          )
-        ],
-        onTap: (index) {
-          setState(() {
-            _currentNav = index;
-          });
-        },
-      ),
-      */
-    );
+        resizeToAvoidBottomInset:
+            true, // TODO scroll tapped text area into view?
+        body: ScrollablePositionedList.builder(
+            initialScrollIndex: currentDay,
+            itemCount: 40000,
+            itemScrollController: itemScrollController,
+            itemPositionsListener: itemPositionsListener,
+            itemBuilder: (context, i) => item(context, i)),
+        floatingActionButton: showActionButton
+            ? FloatingActionButton(
+                child: Icon(Icons.restaurant_menu),
+                onPressed: selectedDay == dayUnselected
+                    ? null
+                    : () {
+                        _selectDish(context, selectedDay);
+                      },
+              )
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: DishBottomBar(
+          onTapToday: (bContext) {
+            itemScrollController.scrollTo(
+                index: currentDay,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOutCubic);
+            setState(() {
+              selectedDay = currentDay;
+            });
+          },
+          onTapNewNote: (bContext) {
+            if (selectedDay != dayUnselected) {
+              setState(() {
+                var dayBox = Hive.box<Day>('dayBox');
+                var dm = dayBox.get(selectedDay);
+                if (dm == null) {
+                  dm = Day();
+                  dayBox.put(selectedDay, dm);
+                }
+                dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
+                var note =
+                    Dish(note: ''); // a hint is rendered for an empty string
+                Hive.box<Dish>('dishBox').add(note);
+                dm.entries.add(note);
+                dm.save();
+                // TODO hide add dish action when editing  note
+                _showBottomSheet(bContext, note);
+              });
+            }
+          },
+          onTapCategories: (bContext) {
+            _viewCategories(bContext);
+          },
+        ));
   }
 
 //  will return a widget used as an indicator for the drop position
@@ -206,17 +132,11 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _showBottomSheet(BuildContext context, Dish dish) {
+    showActionButton = false;
     bottomSheetController = showBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return /*Padding(
-                              padding: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(context).viewInsets.bottom),
-                              child:*/
-            Container(
-          //margin: const EdgeInsets.only(
-          // top: 25, left: 15, right: 15),
+        return Container(
           height: 70,
           decoration: BoxDecoration(
             border: Border(top: BorderSide(color: Colors.black)),
@@ -244,13 +164,15 @@ class _PlanPageState extends State<PlanPage> {
                     border: InputBorder.none,
                     hintText: 'Neue Notiz'),
                 onChanged: (value) {
-                  if (dish.note != value) {
-                    dish.note = value;
-                    dish.save();
-                  }
+                  setState(() {
+                    if (dish.note != value) {
+                      dish.note = value;
+                      dish.save();
+                    }
+                    if (dish.note == '') dish.delete();
+                  });
                 },
               )),
-          /*)*/
         );
       },
     );
@@ -336,6 +258,7 @@ class _PlanPageState extends State<PlanPage> {
                     */
                     var bsc = bottomSheetController;
                     if (bsc != null) {
+                      showActionButton = false;
                       bsc.close();
                       bottomSheetController = null;
                     }
@@ -447,6 +370,7 @@ class _PlanPageState extends State<PlanPage> {
             }*/
             var bsc = bottomSheetController;
             if (bsc != null) {
+              showActionButton = true;
               bsc.close();
               bottomSheetController = null;
             }
@@ -458,8 +382,6 @@ class _PlanPageState extends State<PlanPage> {
           },
         ));
   }
-
-  // TODO scroll to focused textfiled: https://www.didierboelens.com/2018/04/hint-4-ensure-a-textfield-or-textformfield-is-visible-in-the-viewport-when-has-the-focus/
 
   void _selectDish(BuildContext context, int day) async {
     // TODO dish zurückgeben https://flutter.dev/docs/cookbook/navigation/returning-data#interactive-example
