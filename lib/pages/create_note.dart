@@ -31,13 +31,13 @@ class EditNoteFormState extends State<EditNoteForm> {
         children: <Widget>[
           TextFormField(
               decoration: InputDecoration(labelText: 'Notizen'),
-              onSaved: (String value) {
-                note.note = value;
+              onSaved: (String? value) {
+                note.note = value ?? '';
               }),
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
-              _formKey.currentState.save();
+              _formKey.currentState?.save();
               Navigator.pop(context, note);
             },
           ),

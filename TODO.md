@@ -1,3 +1,22 @@
+31.10.2021
+==========
+
+Known bugs:
+## 1. sortierung bleibt nicht erhalten
+Gerichte nach tagen sortieren.
+Wenn dann eine kategorie ausgewält wird werden die gerichte nicht korrekt sortiert.
+Anscheinend Nur per Name
+
+## 2. Neue Kategorie wird nicht ausgewält
+
+Neues Gericht anlegen.
+Wenn eine neue Kategorie angelegt wird erscheint das tag unselektiert.
+Wenn man speichert ist es aber dem Gericht zugewiesen.
+Wenn man es auswählt und dann speichert ist es doppelt zugewiesen!
+
+## 3. Farben werden nicht gespeichert
+
+
 10.04.2021
 ==========
 

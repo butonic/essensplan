@@ -7,24 +7,21 @@ part 'dish.g.dart';
 @HiveType(typeId: 0)
 class Dish extends HiveObject {
   @HiveField(0)
-  String name;
+  String? name;
 
   @HiveField(1)
-  String note;
+  String? note;
 
   @HiveField(2)
-  HiveList<Category> categories;
+  HiveList<Category>? categories;
 
   @HiveField(3)
-  HiveList<Tag> tags;
+  HiveList<Tag>? tags;
 
   @HiveField(4)
-  bool deleted;
+  bool? deleted;
 
   int lastCookedDay;
 
-  Dish({
-    this.name,
-    this.note,
-  });
+  Dish({this.name, this.note, this.deleted = false, this.lastCookedDay = -1});
 }

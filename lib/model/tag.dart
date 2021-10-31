@@ -8,6 +8,6 @@ class Tag extends HiveObject {
   String name;
 
   Tag({
-    this.name,
+    required this.name,
   });
 }

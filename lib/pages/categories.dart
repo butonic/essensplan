@@ -7,7 +7,7 @@ import '../model/category.dart';
 
 // The CategoriesPage is used to manege all categories
 class CategoriesPage extends StatefulWidget {
-  CategoriesPage({Key key}) : super(key: key);
+  CategoriesPage({Key? key}) : super(key: key);
 
   @override
   _CategoriesPageState createState() => _CategoriesPageState();
@@ -92,7 +92,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                         controller: TextEditingController(
                                             text: list[i].name),
                                         validator: (value) {
-                                          if (value.isEmpty) {
+                                          if (value!.isEmpty) {
                                             return 'Bitte einen namen eingeben';
                                           }
                                           return null;

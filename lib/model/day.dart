@@ -6,7 +6,7 @@ part 'day.g.dart';
 @HiveType(typeId: 3)
 class Day extends HiveObject {
   @HiveField(0)
-  HiveList<Dish> entries;
+  HiveList<Dish>? entries;
 
   Day();
 }

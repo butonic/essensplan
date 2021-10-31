@@ -13,7 +13,7 @@ import 'edit_dish.dart';
 // The DishesPage loads all dishes, categories and tags on startup
 // the categories and tags are usedy to build a filter for the db
 class DishesPage extends StatefulWidget {
-  DishesPage({Key key}) : super(key: key);
+  DishesPage({Key? key}) : super(key: key);
 
   @override
   _DishesPageState createState() => _DishesPageState();
@@ -25,12 +25,12 @@ class _DishesPageState extends State<DishesPage> {
   static final GlobalKey<ScaffoldState> _dishesKey = GlobalKey<ScaffoldState>();
   String query = '';
 
-  Dish scrollTarget;
+  Dish? scrollTarget;
 
-  TextEditingController _searchQuery;
+  TextEditingController _searchQuery = TextEditingController();
 
-  List<Category> selectedCategories;
-  List<Dish> filteredDishes;
+  List<Category> selectedCategories = <Category>[];
+  List<Dish> filteredDishes = <Dish>[];
 
   bool andFilterCategories = false;
   bool showDeleted = false;
@@ -39,11 +39,15 @@ class _DishesPageState extends State<DishesPage> {
   List<int Function(Dish, Dish)> sortFunctions = [
     // by name asc
     (d1, d2) {
-      return d1.name.toLowerCase().compareTo(d2.name.toLowerCase());
+      return (d1.name ?? '')
+          .toLowerCase()
+          .compareTo((d2.name ?? '').toLowerCase());
     },
     // by name desc
     (d1, d2) {
-      return d2.name.toLowerCase().compareTo(d1.name.toLowerCase());
+      return (d2.name ?? '')
+          .toLowerCase()
+          .compareTo((d1.name ?? '').toLowerCase());
     },
     // by days asc
     (d1, d2) {
@@ -60,19 +64,15 @@ class _DishesPageState extends State<DishesPage> {
   void initState() {
     super.initState();
 
-    Function(Dish, Dish) sortBy = sortFunctions[currentSortFunction];
+    int Function(Dish, Dish)? sortBy = sortFunctions[currentSortFunction];
 
     // load all dishes
-    filteredDishes = <Dish>[];
     setState(() {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
           .where((dish) => dish.deleted != true && dish.name != null));
       filteredDishes.sort(sortBy);
     });
-
-    _searchQuery = TextEditingController();
-    selectedCategories = <Category>[];
   }
   // TODO on destroy remove the initialized vars?
 
@@ -196,9 +196,9 @@ class _DishesPageState extends State<DishesPage> {
                         dish.save();
                       });
                       // Show a snackbar. This snackbar could also contain "Undo" actions.
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
-                              "${dish.name ?? dish.note} ${dish.deleted ? 'Gelöscht' : 'Wiederhergestellt'}")));
+                              "${dish.name ?? dish.note} ${dish.deleted == true ? 'Gelöscht' : 'Wiederhergestellt'}")));
                     },
                   )
                 : Hive.box<Dish>('dishBox').values == null
@@ -321,7 +321,7 @@ class _DishesPageState extends State<DishesPage> {
                         color: c.color != null ? Color(c.color) : Colors.grey),
                     borderRadius: BorderRadius.all(Radius.circular(4)),
                     onPressed: (Item item) {
-                      if (item.active) {
+                      if (item.active == true) {
                         selectedCategories.add(item.customData);
                       } else {
                         selectedCategories.remove(item.customData);
@@ -414,36 +414,36 @@ class _DishesPageState extends State<DishesPage> {
 
     newQuery = newQuery.toLowerCase();
 
-    if (newQuery?.isNotEmpty == true) {
+    if (newQuery.isNotEmpty == true) {
       dishes = dishes.where((e) {
-        return e.name.toLowerCase().contains(newQuery) ||
-            e.note?.toLowerCase()?.contains(newQuery) == true;
+        return e.name?.toLowerCase().contains(newQuery) == true ||
+            e.note?.toLowerCase().contains(newQuery) == true;
       });
     }
 
     // if categories have been selected
-    if (categories?.isNotEmpty == true) {
+    if (categories.isNotEmpty == true) {
       if (andFilterCategories) {
         // only add dishes that have all of the selected the categories
         dishes =
-            dishes.where((d) => d.categories.toSet().containsAll(categories));
+            dishes.where((d) => d.categories!.toSet().containsAll(categories));
       } else {
         // add all dishes with any of the selected categories
         dishes = dishes.where(
-            (dish) => dish.categories.any((dc) => categories.contains(dc)));
+            (dish) => dish.categories!.any((dc) => categories.contains(dc)));
       }
     }
 
     filteredDishes.addAll(dishes);
     filteredDishes.sort((d1, d2) {
-      return d1.name.compareTo(d2.name);
+      return (d1.name ?? '').compareTo(d2.name ?? '');
     });
 
     // 3. filter categories
     if (selectedCategories != categories) {
       // we have new categories
       selectedCategories.clear();
-      if (categories?.isNotEmpty == true) {
+      if (categories.isNotEmpty == true) {
         selectedCategories.addAll(categories);
       }
     }
@@ -455,7 +455,8 @@ class _DishesPageState extends State<DishesPage> {
   //Filtering the list item with found match string.
   void filterList(Dish dish, String searchQuery) {
     setState(() {
-      if (dish.name.toLowerCase().contains(searchQuery.toLowerCase())) {
+      if (dish.name?.toLowerCase().contains(searchQuery.toLowerCase()) ==
+          true) {
         filteredDishes.add(dish);
       }
     });

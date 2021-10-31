@@ -19,23 +19,22 @@ import 'package:flutter/rendering.dart';
 class Split extends StatefulWidget {
   /// Builds a split oriented along [axis].
   Split({
-    Key key,
-    @required this.axis,
-    @required this.children,
-    @required this.initialFractions,
+    Key? key,
+    required this.axis,
+    required this.children,
+    required this.initialFractions,
     this.minSizes,
     this.splitters,
-  })  : assert(axis != null),
-        assert(children != null && children.length >= 2),
-        assert(initialFractions != null && initialFractions.length >= 2),
+  })  : assert(children.length >= 2),
+        assert(initialFractions.length >= 2),
         assert(children.length == initialFractions.length),
         super(key: key) {
     _verifyFractionsSumTo1(initialFractions);
     if (minSizes != null) {
-      assert(minSizes.length == children.length);
+      assert(minSizes!.length == children.length);
     }
     if (splitters != null) {
-      assert(splitters.length == children.length - 1);
+      assert(splitters!.length == children.length - 1);
     }
   }
 
@@ -60,12 +59,12 @@ class Split extends StatefulWidget {
   final List<double> initialFractions;
 
   /// The minimum size each child is allowed to be.
-  final List<double> minSizes;
+  final List<double>? minSizes;
 
   /// Splitter widgets to divide [children].
   ///
   /// If this is null, a default splitter will be used to divide [children].
-  final List<SizedBox> splitters;
+  final List<SizedBox>? splitters;
 
   /// The key passed to the divider between children[index] and
   /// children[index + 1].
@@ -89,7 +88,7 @@ class Split extends StatefulWidget {
 }
 
 class _SplitState extends State<Split> {
-  List<double> fractions;
+  late List<double> fractions;
 
   bool get isHorizontal => widget.axis == Axis.horizontal;
 
@@ -116,16 +115,16 @@ class _SplitState extends State<Split> {
       if (widget.minSizes == null) return 0.0;
 
       var totalMinSize = 0.0;
-      for (var minSize in widget.minSizes) {
+      for (var minSize in widget.minSizes!) {
         totalMinSize += minSize;
       }
 
       // Reduce the min sizes gracefully if the total required min size for all
       // children is greater than the available size for children.
       if (totalMinSize > availableSize) {
-        return widget.minSizes[index] * availableSize / totalMinSize;
+        return widget.minSizes![index] * availableSize / totalMinSize;
       } else {
-        return widget.minSizes[index];
+        return widget.minSizes![index];
       }
     }
 
@@ -267,7 +266,7 @@ class _SplitState extends State<Split> {
               // drag action triggers which is't ideal but isn't a launch blocker.
               dragStartBehavior: DragStartBehavior.down,
               child: widget.splitters != null
-                  ? widget.splitters[i]
+                  ? widget.splitters![i]
                   : _defaultSplitter(layoutHeight: height, layoutWidth: width),
             ),
           ),
@@ -282,16 +281,17 @@ class _SplitState extends State<Split> {
       return numSplitters * Split.defaultSplitterSize;
     } else {
       var totalSize = 0.0;
-      for (var splitter in widget.splitters) {
-        totalSize += isHorizontal ? splitter.width : splitter.height;
+      for (var splitter in widget.splitters!) {
+        totalSize +=
+            isHorizontal ? splitter.width ?? 0.0 : splitter.height ?? 0.0;
       }
       return totalSize;
     }
   }
 
   Widget _defaultSplitter({
-    @required double layoutWidth,
-    @required double layoutHeight,
+    required double layoutWidth,
+    required double layoutHeight,
   }) {
     final crossAxisSize = isHorizontal ? layoutHeight : layoutWidth;
 

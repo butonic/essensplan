@@ -16,7 +16,7 @@ class DayAdapter extends TypeAdapter<Day> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Day()..entries = (fields[0] as HiveList)?.castHiveList();
+    return Day()..entries = (fields[0] as HiveList?)?.castHiveList();
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:essensplan/pages/view_dish.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import 'pages/plan.dart';
 import 'pages/dishes.dart';
@@ -35,7 +34,6 @@ void main() async {
 
   Intl.defaultLocale = 'de_DE';
 
-  timeago.setLocaleMessages('de', timeago.DeMessages());
   await initializeDateFormatting('de_DE', null)
       .then((_) => runApp(EssensplanApp()));
 

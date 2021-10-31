@@ -1,6 +1,5 @@
 import 'package:essensplan/widgets/dish_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:essensplan/pages/view_dish.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -13,7 +12,7 @@ import '../widgets/dish_or_note.dart';
 const dayUnselected = -1;
 
 class PlanPage extends StatefulWidget {
-  PlanPage({Key key}) : super(key: key);
+  PlanPage({Key? key}) : super(key: key);
 
   @override
   _PlanPageState createState() => _PlanPageState();
@@ -32,7 +31,7 @@ class _PlanPageState extends State<PlanPage> {
       ItemPositionsListener.create();
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
-  PersistentBottomSheetController bottomSheetController;
+  PersistentBottomSheetController? bottomSheetController;
 
   int selectedDay = dayUnselected;
 
@@ -66,12 +65,12 @@ class _PlanPageState extends State<PlanPage> {
             itemBuilder: (context, i) => item(context, i)),
         floatingActionButton: showActionButton
             ? FloatingActionButton(
-                child: Icon(Icons.restaurant_menu),
                 onPressed: selectedDay == dayUnselected
                     ? null
                     : () {
                         _selectDish(context, selectedDay);
                       },
+                child: Icon(Icons.restaurant_menu),
               )
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -98,7 +97,7 @@ class _PlanPageState extends State<PlanPage> {
                 var note =
                     Dish(note: ''); // a hint is rendered for an empty string
                 Hive.box<Dish>('dishBox').add(note);
-                dm.entries.add(note);
+                dm.entries!.add(note);
                 dm.save();
                 // TODO hide add dish action when editing  note
                 _showBottomSheet(bContext, note);
@@ -112,7 +111,13 @@ class _PlanPageState extends State<PlanPage> {
   }
 
 //  will return a widget used as an indicator for the drop position
-  Widget _buildDropPreview(BuildContext context, Dish dish) {
+  Widget _buildDropPreview(BuildContext context, Dish? dish) {
+    if (dish == null) {
+      return Container(
+        width: double.infinity,
+        height: 4, // to make up for the EdgeInset of 4.0
+      );
+    }
     return Card(
       color: Colors.lightBlue[200],
       child: Padding(
@@ -121,7 +126,7 @@ class _PlanPageState extends State<PlanPage> {
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: Text(dish.name ?? dish.note,
+              child: Text(dish.name ?? dish.note ?? 'Fehlender Name und Notiz',
                   style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -184,44 +189,45 @@ class _PlanPageState extends State<PlanPage> {
     var dm = Hive.box<Day>('dayBox').get(day);
     var dishes = <Widget>[];
 
-    if (dm != null) {
+    if (dm != null && dm.entries != null) {
       // for loop with item index
-      for (var i = 0; i < dm.entries.length; i++) {
+      for (var i = 0; i < dm.entries!.length; i++) {
         // the Draggables are in a Column
         // they need to be interwoven with DragTargets
         // https://stackoverflow.com/a/64011994
         dishes.add(DragTarget<DragData>(
           builder: (context, candidates, rejects) {
-            return candidates.isNotEmpty
-                ? _buildDropPreview(
-                    context, candidates[0].source.entries[candidates[0].index])
-                : Container(
-                    width: double.infinity,
-                    height: 4, // to make up for the EdgeInset of 4.0
-                  );
+            DragData? candidate = candidates.isNotEmpty ? candidates[0] : null;
+            return _buildDropPreview(
+                context, candidate?.source.entries?[candidate.index]);
           },
           onWillAccept: (data) => true, // TODO ignore direct neighbors
           onAccept: (data) {
             setState(() {
-              dm.entries.insert(i, data.source.entries[data.index]);
-              if (dm == data.source && i < data.index) {
-                data.source.entries.removeAt(data.index + 1);
-              } else {
-                data.source.entries.removeAt(data.index);
+              if (data.source.entries != null) {
+                dm!.entries!.insert(i, data.source.entries![data.index]);
+                if (dm == data.source && i < data.index) {
+                  data.source.entries!.removeAt(data.index + 1);
+                } else {
+                  data.source.entries!.removeAt(data.index);
+                }
               }
-              dm.save();
+              dm!.save();
               data.source.save();
             });
           },
         ));
-        final dish = dm.entries[i];
+        final dish = dm.entries![i];
         dishes.add(LongPressDraggable<DragData>(
             data: DragData(dm, i),
             //dragAnchor: DragAnchor.pointer, // better leave child so we can see what we are dragging
             feedback: Card(
                 child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: Text(dm.entries[i].name ?? dm.entries[i].note,
+              child: Text(
+                  dm.entries![i].name ??
+                      dm.entries![i].note ??
+                      'Fehlender Name und Notiz',
                   style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -235,16 +241,17 @@ class _PlanPageState extends State<PlanPage> {
                       Text('', style: TextStyle(fontWeight: FontWeight.bold)),
                 )),
             child: Dismissible(
-              key: ValueKey('day-$day[${dish.hashCode}]'),
+              key: UniqueKey(), //ValueKey('day-$day[${dish.hashCode}]'),
               onDismissed: (direction) {
                 setState(() {
-                  dm.entries.removeAt(i);
-                  dm.save();
+                  dm!.entries!.removeAt(i);
+                  dm!.save();
                   dishes.removeAt(i);
                 });
                 // Show a snackbar. This snackbar could also contain "Undo" actions.
-                _planKey.currentState.showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('${dish.name ?? dish.note} gelöscht')));
+                // FIXME Make sure to implement the onDismissed handler and to immediately remove the Dismissible widget from the application once that handler has fired.
               },
               child: DishOrNoteWidget(
                   dish: dish,
@@ -272,7 +279,8 @@ class _PlanPageState extends State<PlanPage> {
                         selectedDay = day;
                       }
                     });
-                  },
+                  } /* ,
+                 
                   noteSuffix: selectedDay != day
                       ? null
                       // TODO notizen fühlen sich anders an / draggen sich anders als gerichte:
@@ -292,35 +300,34 @@ class _PlanPageState extends State<PlanPage> {
                           child: Icon(
                             Icons.drag_handle,
                             size: 14,
-                          ))),
+                          ))
+                          */
+                  ),
             )));
       }
     }
     dishes.add(DragTarget<DragData>(
       builder: (context, candidates, rejects) {
-        return candidates.isNotEmpty
-            ? _buildDropPreview(
-                context, candidates[0].source.entries[candidates[0].index])
-            : Container(
-                width: double.infinity,
-                height: 4, // to make up for the EdgeInset of 4.0
-              );
+        DragData? candidate = candidates.isNotEmpty ? candidates[0] : null;
+        return _buildDropPreview(
+            context, candidate?.source.entries?[candidate.index]);
       },
       onWillAccept: (data) => true, // TODO ignore direct neighbors
       onAccept: (data) {
         setState(() {
           if (dm == null) {
             dm = Day();
-            Hive.box<Day>('dayBox').put(day, dm);
+            Hive.box<Day>('dayBox').put(day, dm!);
           }
-          dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
-          dm.entries.insert(dm.entries.length, data.source.entries[data.index]);
-          if (dm == data.source && dm.entries.length < data.index) {
-            data.source.entries.removeAt(data.index + 1);
+          dm!.entries ??= HiveList(Hive.box<Dish>('dishBox'));
+          dm!.entries!.insert(dm!.entries!.length,
+              data.source.entries![data.index]); // TODO whacky
+          if (dm == data.source && dm!.entries!.length < data.index) {
+            data.source.entries!.removeAt(data.index + 1);
           } else {
-            data.source.entries.removeAt(data.index);
+            data.source.entries!.removeAt(data.index);
           }
-          dm.save();
+          dm!.save();
           data.source.save();
         });
       },
@@ -343,8 +350,8 @@ class _PlanPageState extends State<PlanPage> {
                 DateFormat('E').format(date),
                 style: TextStyle(
                     color: day == selectedDay
-                        ? Theme.of(context).accentColor
-                        : Theme.of(context).textTheme.bodyText1.color,
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).textTheme.bodyText1?.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 16),
               ),
@@ -352,8 +359,8 @@ class _PlanPageState extends State<PlanPage> {
                 DateFormat('dd.MM').format(date),
                 style: TextStyle(
                   color: day == selectedDay
-                      ? Theme.of(context).accentColor
-                      : Theme.of(context).textTheme.bodyText1.color,
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).textTheme.bodyText1?.color,
                 ),
               ),
             ],
@@ -402,7 +409,7 @@ class _PlanPageState extends State<PlanPage> {
           dayBox.put(day, dm);
         }
         dm.entries ??= HiveList(Hive.box<Dish>('dishBox'));
-        dm.entries.add(result);
+        dm.entries!.add(result);
         dm.save();
       });
     }

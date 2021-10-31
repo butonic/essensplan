@@ -25,7 +25,8 @@ class EditDishPageState extends State<EditDishPage> {
 
   @override
   Widget build(BuildContext context) {
-    final EditDishArguments args = ModalRoute.of(context).settings.arguments;
+    final EditDishArguments args =
+        ModalRoute.of(context)?.settings.arguments as EditDishArguments;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -56,14 +57,14 @@ class EditDishPageState extends State<EditDishPage> {
                         hintText: 'Name des Gerichts eingeben',
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return 'Bitte einen namen eingeben';
                         }
                         return null;
                       },
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onSaved: (String value) {
-                        args.dish.name = value;
+                      onSaved: (String? value) {
+                        args.dish.name = value ?? 'Unbekannt';
                       })),
               Padding(
                   padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
@@ -83,8 +84,8 @@ class EditDishPageState extends State<EditDishPage> {
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
                         hintText: 'Notizen, Link, etc. zum Gericht eingeben',
                       ),
-                      onSaved: (String value) {
-                        args.dish.note = value;
+                      onSaved: (String? value) {
+                        args.dish.note = value ?? 'Unbekannt';
                       })),
               Divider(),
               Padding(
@@ -111,7 +112,7 @@ class EditDishPageState extends State<EditDishPage> {
                         // we need to add the category to the category box before we can reference it
                         // TODO automatically remove category when canceling editing?
                         args.categories.put(cat.id, cat).then((value) {
-                          args.dish.categories.add(cat);
+                          args.dish.categories?.add(cat);
                         });
                       });
                     },
@@ -126,25 +127,26 @@ class EditDishPageState extends State<EditDishPage> {
                       key: Key(index.toString()),
                       //key: Key(item.name),
                       index: index, // required
-                      title: c.name,
+                      title: c?.name ?? 'Unbekannt',
                       color: Colors.white,
                       textColor:
-                          c.color != null ? Color(c.color) : Colors.black,
+                          c?.color != null ? Color(c!.color!) : Colors.black,
                       border: Border.all(
-                          color:
-                              c.color != null ? Color(c.color) : Colors.grey),
+                          color: c?.color != null
+                              ? Color(c!.color!)
+                              : Colors.grey),
                       // true if dish has this category
-                      active: args.dish.categories.contains(c),
+                      active: args.dish.categories?.contains(c) ?? false,
                       textActiveColor: Colors.white,
                       activeColor:
-                          c.color != null ? Color(c.color) : Colors.grey,
+                          c?.color != null ? Color(c!.color!) : Colors.grey,
 
                       customData: c,
                       onPressed: (Item item) {
-                        if (item.active) {
-                          args.dish.categories.add(item.customData);
+                        if (item.active == true) {
+                          args.dish.categories?.add(item.customData);
                         } else {
-                          args.dish.categories.remove(item.customData);
+                          args.dish.categories?.remove(item.customData);
                         }
                       },
 
@@ -169,7 +171,7 @@ class EditDishPageState extends State<EditDishPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _formKey.currentState.save();
+          _formKey.currentState?.save();
           Navigator.pop(context, args);
         },
         child: Icon(Icons.save),

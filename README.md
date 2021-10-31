@@ -4,7 +4,10 @@ A simple menu planner in flutter.
 
 
 ## Building
-Update version number in pubspec.yaml
+1. Update version number in pubspec.yaml
+- increase version number as needed for semver
+- increase build version by one at least
+
 `flutter build apk --target-platform android-arm64`
 
 ## Updating via adb

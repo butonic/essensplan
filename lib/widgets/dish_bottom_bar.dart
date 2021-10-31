@@ -15,10 +15,10 @@ class DishBottomBar extends StatelessWidget {
   final PlanTapCategoriesCallback onTapCategories;
 
   DishBottomBar({
-    Key key,
-    this.onTapToday,
-    this.onTapNewNote,
-    this.onTapCategories,
+    Key? key,
+    required this.onTapToday,
+    required this.onTapNewNote,
+    required this.onTapCategories,
   }) : super(key: key);
 
   @override

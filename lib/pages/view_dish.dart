@@ -9,7 +9,7 @@ import '../model/category.dart';
 import '../pages/edit_dish.dart';
 
 class ViewDishPage extends StatefulWidget {
-  ViewDishPage({Key key}) : super(key: key);
+  ViewDishPage({Key? key}) : super(key: key);
 
   @override
   _ViewDishPageState createState() => _ViewDishPageState();
@@ -19,14 +19,12 @@ class _ViewDishPageState extends State<ViewDishPage> {
   static final GlobalKey<ScaffoldState> _viewDishKey =
       GlobalKey<ScaffoldState>();
 
-  Dish dish;
-
   @override
   Widget build(BuildContext context) {
-    if (dish == null) {
-      final ViewDishArguments args = ModalRoute.of(context).settings.arguments;
-      dish = args.dish;
-    }
+    final ViewDishArguments args =
+        ModalRoute.of(context)!.settings.arguments as ViewDishArguments;
+    Dish dish = args.dish;
+
     return Scaffold(
       key: _viewDishKey,
       appBar: AppBar(
@@ -47,7 +45,7 @@ class _ViewDishPageState extends State<ViewDishPage> {
             Padding(
                 padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
                 child: Text(
-                  dish.name,
+                  dish.name ?? 'Fehlender Name',
                   style: TextStyle(color: Colors.black, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
@@ -61,11 +59,9 @@ class _ViewDishPageState extends State<ViewDishPage> {
             Padding(
                 padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
                 child: SelectableLinkify(
-                  style: dish.note.isEmpty
-                      ? TextStyle(
-                          color: Colors.black45, fontStyle: FontStyle.italic)
-                      : null,
-                  text: dish.note.isEmpty ? 'Keine Notiz' : dish.note,
+                  style: TextStyle(
+                      color: Colors.black45, fontStyle: FontStyle.italic),
+                  text: (dish.note ?? 'Keine Notiz'),
                   onOpen: (link) async {
                     if (await canLaunch(link.url)) {
                       await launch(link.url);
@@ -78,20 +74,21 @@ class _ViewDishPageState extends State<ViewDishPage> {
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
                 child: Tags(
-                  itemCount: dish.categories.length,
+                  itemCount: dish.categories?.length ?? 0,
                   itemBuilder: (int index) {
-                    final c = dish.categories.elementAt(index);
+                    final c = dish.categories?.elementAt(index);
 
                     return ItemTags(
                       key: Key(index.toString()),
                       index: index,
-                      title: c.name,
+                      title: c?.name ?? 'Fehlender Name',
                       active: true,
                       activeColor:
-                          c.color != null ? Color(c.color) : Colors.grey,
+                          c?.color != null ? Color(c!.color!) : Colors.grey,
                       border: Border.all(
-                          color:
-                              c.color != null ? Color(c.color) : Colors.grey),
+                          color: c?.color != null
+                              ? Color(c!.color!)
+                              : Colors.grey),
                       customData: c,
                       pressEnabled: false,
                     );

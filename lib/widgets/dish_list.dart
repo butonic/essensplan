@@ -15,7 +15,7 @@ class DishList extends StatelessWidget {
 
   final List<Dish> dishes;
 
-  final Dish scrollTarget;
+  final Dish? scrollTarget;
 
   /// Called when the user taps a dish.
   final DishTapCallback onTap;
@@ -29,12 +29,12 @@ class DishList extends StatelessWidget {
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
   DishList(
-      {Key key,
-      this.dishes,
+      {Key? key,
+      required this.dishes,
       this.scrollTarget,
-      this.onLongPress,
-      this.onTap,
-      this.onDismissed})
+      required this.onLongPress,
+      required this.onTap,
+      required this.onDismissed})
       : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class DishList extends StatelessWidget {
       for (var i = 0; i < dishes.length; i++) {
         if (dishes.elementAt(i) == scrollTarget) {
           // register a callback that is executed when tha list has been rendered
-          SchedulerBinding.instance.addPostFrameCallback((_) {
+          SchedulerBinding.instance?.addPostFrameCallback((_) {
             if (itemScrollController.isAttached) {
               // we use jumpTo because the initialScrollIndex property does not work ... for whatever reason
               itemScrollController.jumpTo(index: i);
@@ -73,7 +73,7 @@ class DishList extends StatelessWidget {
       BuildContext context, Box<Day> dayBox, List<dynamic> sorted, int index) {
     // This searches from the most recent date ... will still get slow over time
     var lastCookedDay = sorted.firstWhere(
-      (i) => dayBox.get(i)?.entries?.contains(dishes[index]),
+      (i) => dayBox.get(i)?.entries?.contains(dishes[index]) ?? false,
       orElse: () => null,
     );
 
@@ -109,7 +109,7 @@ class DishList extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      dishes[index].name,
+                      dishes[index].name ?? 'Unbekannt',
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
                       textWidthBasis: TextWidthBasis.parent,
@@ -126,7 +126,7 @@ class DishList extends StatelessWidget {
                 ),
                 Text(
                   // TODO multiple text fields with different color? or richtext
-                  dishes[index].categories.map((e) => e.name).join(' '),
+                  dishes[index].categories?.map((e) => e.name).join(' ') ?? '',
                   // set some style to text
                   style: TextStyle(fontSize: 12.0, color: Colors.lightGreen),
                 ),

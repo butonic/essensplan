@@ -17,12 +17,12 @@ class DishAdapter extends TypeAdapter<Dish> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Dish(
-      name: fields[0] as String,
-      note: fields[1] as String,
+      name: fields[0] as String?,
+      note: fields[1] as String?,
+      deleted: fields[4] as bool?,
     )
-      ..categories = (fields[2] as HiveList)?.castHiveList()
-      ..tags = (fields[3] as HiveList)?.castHiveList()
-      ..deleted = fields[4] as bool;
+      ..categories = (fields[2] as HiveList?)?.castHiveList()
+      ..tags = (fields[3] as HiveList?)?.castHiveList();
   }
 
   @override

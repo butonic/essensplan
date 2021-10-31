@@ -6,8 +6,8 @@ class DaysAgo extends StatelessWidget {
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
   DaysAgo({
-    Key key,
-    this.days,
+    Key? key,
+    required this.days,
   }) : super(key: key);
 
   @override
