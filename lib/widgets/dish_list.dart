@@ -61,7 +61,7 @@ class DishList extends StatelessWidget {
     }
     return ScrollablePositionedList.builder(
         //  initialScrollIndex: initialScrollIndex, // tried that, didn't work. using the hack above
-        itemCount: dishes == null ? 0 : dishes.length,
+        itemCount: dishes.length,
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener,
         itemBuilder: (BuildContext context, int index) =>

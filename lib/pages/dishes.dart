@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
-import 'package:essensplan/widgets/split.dart';
 
 import '../model/dish.dart';
 import '../model/category.dart';
@@ -92,11 +91,42 @@ class _DishesPageState extends State<DishesPage> {
           ]),
       body: Form(
         key: _dishesKey,
-        child: Split(
-          axis: Axis.vertical,
-          initialFractions: [.4, .6],
-          minSizes: [150, 100],
-          splitters: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: _searchQuery,
+                        decoration: const InputDecoration(
+                            hintText: 'Suche nach Name oder Notiz ...',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(fontStyle: FontStyle.italic)),
+                        onChanged: (String q) {
+                          updateSearchQuery(q, selectedCategories);
+                        },
+                      ),
+                    ),
+                    _searchQuery.text.isEmpty
+                        ? Container()
+                        : IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: _clearSearchQuery)
+                  ],
+                )),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
+                child: Text(
+                  'Filtern nach Kategorien', // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                )),
+            // TODO kategorien einklappbar machen?
+            _buildCategoryDropdown(),
             SizedBox(
                 height: 35,
                 child: Row(
@@ -123,81 +153,41 @@ class _DishesPageState extends State<DishesPage> {
                                 .sort(sortFunctions[currentSortFunction]);
                           }
                         });
-
-                        // TODO sort by name, days, random
-                        // default days?
                       },
                     ),
-                    Icon(Icons.drag_handle)
                   ],
-                ))
-          ],
-          children: <Widget>[
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: TextField(
-                          controller: _searchQuery,
-                          decoration: const InputDecoration(
-                              hintText: 'Suche nach Name oder Notiz ...',
-                              border: InputBorder.none,
-                              hintStyle:
-                                  TextStyle(fontStyle: FontStyle.italic)),
-                          onChanged: (String q) {
-                            updateSearchQuery(q, selectedCategories);
-                          },
+                )),
+            Expanded(
+              child: filteredDishes.isNotEmpty
+                  ? DishList(
+                      dishes: filteredDishes,
+                      scrollTarget: scrollTarget,
+                      onTap: _selectedDish,
+                      onLongPress: _editDish,
+                      onDismissed: (BuildContext context,
+                          DismissDirection direction, Dish dish) {
+                        setState(() {
+                          filteredDishes.remove(dish);
+                          if (dish.deleted == true) {
+                            dish.deleted = false;
+                          } else {
+                            // it might be null or false, in both cases set to true
+                            dish.deleted = true;
+                          }
+                          dish.save();
+                        });
+                        // Show a snackbar. This snackbar could also contain "Undo" actions.
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "${dish.name ?? dish.note} ${dish.deleted == true ? 'Gelöscht' : 'Wiederhergestellt'}")));
+                      },
+                    )
+                  : Hive.box<Dish>('dishBox').values == null
+                      ? Center(child: CircularProgressIndicator())
+                      : Center(
+                          child: Text('Kein Treffer'),
                         ),
-                      ),
-                      _searchQuery.text.isEmpty
-                          ? Container()
-                          : IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: _clearSearchQuery)
-                    ],
-                  )),
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
-                  child: Text(
-                    'Filtern nach Kategorien', // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
-                    textAlign: TextAlign.left,
-                  )),
-              _buildCategoryDropdown()
-            ]),
-            filteredDishes.isNotEmpty
-                ? DishList(
-                    dishes: filteredDishes,
-                    scrollTarget: scrollTarget,
-                    onTap: _selectedDish,
-                    onLongPress: _editDish,
-                    onDismissed: (BuildContext context,
-                        DismissDirection direction, Dish dish) {
-                      setState(() {
-                        filteredDishes.remove(dish);
-                        if (dish.deleted == true) {
-                          dish.deleted = false;
-                        } else {
-                          // it might be null or false, in both cases set to true
-                          dish.deleted = true;
-                        }
-                        dish.save();
-                      });
-                      // Show a snackbar. This snackbar could also contain "Undo" actions.
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "${dish.name ?? dish.note} ${dish.deleted == true ? 'Gelöscht' : 'Wiederhergestellt'}")));
-                    },
-                  )
-                : Hive.box<Dish>('dishBox').values == null
-                    ? Center(child: CircularProgressIndicator())
-                    : Center(
-                        child: Text('Kein Treffer'),
-                      ),
-            //),
+            ),
           ],
         ),
       ),
@@ -288,43 +278,38 @@ class _DishesPageState extends State<DishesPage> {
       }
     });
     return Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Tags(
-                key: _dishesTagStateKey,
-                itemCount: categories.length, // required
-                itemBuilder: (int index) {
-                  final c = categories[index];
+      padding: const EdgeInsets.all(12.0),
+      child: Tags(
+        key: _dishesTagStateKey,
+        itemCount: categories.length, // required
+        itemBuilder: (int index) {
+          final c = categories[index];
 
-                  return ItemTags(
-                    // Each ItemTags must contain a Key. Keys allow Flutter to
-                    // uniquely identify widgets.
-                    key: Key(index.toString()),
-                    index: index, // required
-                    title: c.name,
-                    color: c.color != null ? Color(c.color) : Colors.grey,
-                    // true if dish has this category
-                    active: false,
-                    customData: c,
-                    border: Border.all(
-                        color: c.color != null ? Color(c.color) : Colors.grey),
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    onPressed: (Item item) {
-                      if (item.active == true) {
-                        selectedCategories.add(item.customData);
-                      } else {
-                        selectedCategories.remove(item.customData);
-                      }
-                      updateSearchQuery(query, selectedCategories);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ));
+          return ItemTags(
+            // Each ItemTags must contain a Key. Keys allow Flutter to
+            // uniquely identify widgets.
+            key: Key(index.toString()),
+            index: index, // required
+            title: c.name,
+            color: c.color != null ? Color(c.color) : Colors.grey,
+            // true if dish has this category
+            active: false,
+            customData: c,
+            border: Border.all(
+                color: c.color != null ? Color(c.color) : Colors.grey),
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            onPressed: (Item item) {
+              if (item.active == true) {
+                selectedCategories.add(item.customData);
+              } else {
+                selectedCategories.remove(item.customData);
+              }
+              updateSearchQuery(query, selectedCategories);
+            },
+          );
+        },
+      ),
+    );
   }
 
   void updateSearchQuery(String newQuery, List<Category> categories) async {

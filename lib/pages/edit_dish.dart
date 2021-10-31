@@ -125,7 +125,6 @@ class EditDishPageState extends State<EditDishPage> {
                       // Each ItemTags must contain a Key. Keys allow Flutter to
                       // uniquely identify widgets.
                       key: Key(index.toString()),
-                      //key: Key(item.name),
                       index: index, // required
                       title: c?.name ?? 'Unbekannt',
                       color: Colors.white,
@@ -149,18 +148,6 @@ class EditDishPageState extends State<EditDishPage> {
                           args.dish.categories?.remove(item.customData);
                         }
                       },
-
-                      //removeButton: ItemTagsRemoveButton(
-                      //  onRemoved: () {
-                      //    // Remove the item from the data source.
-                      //    setState(() {
-                      //      // required
-                      //      args.categories.removeAt(index);
-                      //    });
-                      //    //required
-                      //    return true;
-                      //  },
-                      //),
                     );
                   },
                 ),
@@ -175,7 +162,6 @@ class EditDishPageState extends State<EditDishPage> {
           Navigator.pop(context, args);
         },
         child: Icon(Icons.save),
-        //backgroundColor: Colors.yellow,
       ),
     );
   }
