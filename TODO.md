@@ -1,17 +1,8 @@
 31.10.2021
 ==========
 
-Known bugs:
-## 2. Neue Kategorie wird nicht ausgewält
-Neues Gericht anlegen.
-Wenn eine neue Kategorie angelegt wird erscheint das tag unselektiert.
-Wenn man speichert ist es aber dem Gericht zugewiesen.
-Wenn man es auswählt und dann speichert ist es doppelt zugewiesen!
-
-## 4. Beim Gerichte suchen den hinzufügen button verstecken?
-Wenn man auf der gerichte seire in das such feld tippt schiebt die tastatur den unteren bereich nach oben
-1. - [x] dabei überlappt der untere teil des split den oberen
-2. Der + button verschwindet nicht? soll er?
+Wenn man auf der gerichte seite in das such feld tippt schiebt die tastatur den unteren bereich nach oben
+Der + button verschwindet nicht? soll er?
 
 10.04.2021
 ==========
