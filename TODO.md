@@ -2,11 +2,6 @@
 ==========
 
 Known bugs:
-## 1. sortierung bleibt nicht erhalten
-Gerichte nach tagen sortieren.
-Wenn dann eine kategorie ausgewält wird werden die gerichte nicht korrekt sortiert.
-Anscheinend Nur per Name
-
 ## 2. Neue Kategorie wird nicht ausgewält
 
 Neues Gericht anlegen.
@@ -16,6 +11,10 @@ Wenn man es auswählt und dann speichert ist es doppelt zugewiesen!
 
 ## 3. Farben werden nicht gespeichert
 
+## 4. Beim Gerichte suchen überlappen die gerichte die kategorien
+Wenn man auf der gerichte seire in das such feld tippt schiebt die tastatur den unteren bereich nach oben
+1. dabei überlappt der untere teil des split den oberen
+2. Der + button verschwindet nicht? soll er?
 
 10.04.2021
 ==========

@@ -134,13 +134,6 @@ class _DishesPageState extends State<DishesPage> {
           ],
           children: <Widget>[
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              /*Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
-                  child: Text(
-                    "Suchen",
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
-                    textAlign: TextAlign.left,
-                  )),*/
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: Row(
@@ -175,9 +168,7 @@ class _DishesPageState extends State<DishesPage> {
                   )),
               _buildCategoryDropdown()
             ]),
-            //Expanded(
-            //  child: filteredDishes != null && filteredDishes.length > 0
-            filteredDishes != null && filteredDishes.isNotEmpty
+            filteredDishes.isNotEmpty
                 ? DishList(
                     dishes: filteredDishes,
                     scrollTarget: scrollTarget,
@@ -328,75 +319,10 @@ class _DishesPageState extends State<DishesPage> {
                       }
                       updateSearchQuery(query, selectedCategories);
                     },
-
-                    //removeButton: ItemTagsRemoveButton(
-                    //  onRemoved: () {
-                    //    // Remove the item from the data source.
-                    //    setState(() {
-                    //      // required
-                    //      args.categories.removeAt(index);
-                    //    });
-                    //    //required
-                    //    return true;
-                    //  },
-                    //),
                   );
                 },
               ),
-              /* MultiSelect(
-                titleText: 'Kategorien',
-                selectIcon: null,
-                saveButtonText: 'Filtern',
-                validator: (value) {
-                  if (value == null) {
-                    return 'Berühren um ein oder mehrere Kategorien zu wählen ...';
-                  }
-                  return '';
-                },
-                errorText:
-                    'Berühren um ein oder mehrere Kategorien zu wählen ...',
-                hintText: '',
-                dataSource: Hive.box<Category>('categoryBox')
-                    .values
-                    .map((category) => {
-                          "category": category,
-                          "displayname": category.name,
-                        })
-                    .toList(),
-                textField: 'displayname',
-                valueField: 'category',
-                filterable: true,
-                change: (value) {
-                  // cast dynamic to List<Category>
-                  var categories = (value as List)
-                      ?.map((dynamic item) => item as Category)
-                      ?.toList();
-                  updateSearchQuery(query, categories);
-                },
-                onSaved: (value) {
-                  // cast dynamic to List<Category>
-                  var categories = (value as List)
-                      .whereType<Category>()
-                      ?.map((dynamic item) => item as Category)
-                      ?.toList();
-                  updateSearchQuery(query, categories);
-                },
-              ),
-              */
             ),
-            /*IconButton(
-              //icon: Icon(andFilterCategories ? Icons.call_merge : Icons.call_split),
-              //icon: Icon(andFilterCategories ? Icons.link : Icons.link_off),
-              icon: Icon(andFilterCategories
-                  ? Icons.border_outer
-                  : Icons.border_vertical), // border vertical oder border inner
-              onPressed: () {
-                setState(() {
-                  andFilterCategories = !andFilterCategories;
-                  updateSearchQuery(query, selectedCategories);
-                });
-              },
-            ),*/
           ],
         ));
   }
@@ -435,9 +361,7 @@ class _DishesPageState extends State<DishesPage> {
     }
 
     filteredDishes.addAll(dishes);
-    filteredDishes.sort((d1, d2) {
-      return (d1.name ?? '').compareTo(d2.name ?? '');
-    });
+    filteredDishes.sort(sortFunctions[currentSortFunction]);
 
     // 3. filter categories
     if (selectedCategories != categories) {
