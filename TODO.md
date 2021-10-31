@@ -9,8 +9,6 @@ Wenn eine neue Kategorie angelegt wird erscheint das tag unselektiert.
 Wenn man speichert ist es aber dem Gericht zugewiesen.
 Wenn man es auswählt und dann speichert ist es doppelt zugewiesen!
 
-## 3. Farben werden nicht gespeichert
-
 ## 4. Beim Gerichte suchen überlappen die gerichte die kategorien
 Wenn man auf der gerichte seire in das such feld tippt schiebt die tastatur den unteren bereich nach oben
 1. dabei überlappt der untere teil des split den oberen

@@ -65,6 +65,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                       onColorChanged: (Color color) {
                                         setState(() {
                                           list[i].color = color.value;
+                                          list[i].save();
                                           Navigator.of(context).pop();
                                         });
                                       },
