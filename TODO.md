@@ -1,3 +1,10 @@
+01.11.2021
+==========
+
+Kategorie und Sortierung funktionieren noch nicht rihtig zusammen:
+Wenn man erst die sortierung auf tag stellt und dann eine kategorie wählt ist die reihenfolge korrekt.
+Wenn man erst eine kategorie wählt und dann sortiert ist tas durcheinander...
+
 31.10.2021
 ==========
 
