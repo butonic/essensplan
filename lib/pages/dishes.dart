@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 
 import '../model/dish.dart';
+import '../model/day.dart';
 import '../model/category.dart';
 import '../model/tag.dart';
 import '../widgets/dish_list.dart';
@@ -63,14 +64,22 @@ class _DishesPageState extends State<DishesPage> {
   void initState() {
     super.initState();
 
-    int Function(Dish, Dish)? sortBy = sortFunctions[currentSortFunction];
-
     // load all dishes
     setState(() {
       filteredDishes.addAll(Hive.box<Dish>('dishBox')
           .values
           .where((dish) => dish.deleted != true && dish.name != null));
-      filteredDishes.sort(sortBy);
+
+      // iterate over all days & dishes, set the last cooked day for the dish list
+      Hive.box<Day>('dayBox').toMap().values.forEach((day) {
+        day.entries?.forEach((dish) {
+          if (dish.lastCookedDay < day.key) {
+            dish.lastCookedDay = day.key;
+          }
+        });
+      });
+
+      filteredDishes.sort(sortFunctions[currentSortFunction]);
     });
   }
   // TODO on destroy remove the initialized vars?

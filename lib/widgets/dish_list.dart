@@ -39,10 +39,6 @@ class DishList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dayBox = Hive.box<Day>('dayBox');
-    final sorted = dayBox.keys.toList();
-    sorted.sort((a, b) => b.compareTo(a));
-
     // hack to scroll to dish
     if (scrollTarget != null) {
       // find index of targeted dish
@@ -64,23 +60,14 @@ class DishList extends StatelessWidget {
         itemCount: dishes.length,
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener,
-        itemBuilder: (BuildContext context, int index) =>
-            item(context, dayBox, sorted, index));
+        itemBuilder: (BuildContext context, int index) => item(context, index));
   }
 
   // generate item for list
-  Widget item(
-      BuildContext context, Box<Day> dayBox, List<dynamic> sorted, int index) {
-    // This searches from the most recent date ... will still get slow over time
-    var lastCookedDay = sorted.firstWhere(
-      (i) => dayBox.get(i)?.entries?.contains(dishes[index]) ?? false,
-      orElse: () => null,
-    );
-
+  Widget item(BuildContext context, int index) {
     Widget dateText;
-    if (lastCookedDay != null) {
-      dishes[index].lastCookedDay = lastCookedDay;
-      dateText = DaysAgo(days: lastCookedDay);
+    if (dishes[index].lastCookedDay > -1) {
+      dateText = DaysAgo(days: dishes[index].lastCookedDay);
     } else {
       dateText = Text('nie');
     }
