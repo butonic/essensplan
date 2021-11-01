@@ -52,28 +52,32 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         leading: IconButton(
                           icon: Icon(Icons.circle),
                           onPressed: () {
+                            final oldColor = list[i].color;
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text('Select a color'),
                                   content: SingleChildScrollView(
-                                    child: BlockPicker(
+                                    child: ColorPicker(
+                                      enableAlpha: false,
                                       pickerColor: list[i].color != null
                                           ? Color(list[i].color)
                                           : Colors.grey,
                                       onColorChanged: (Color color) {
                                         setState(() {
                                           list[i].color = color.value;
-                                          list[i].save();
-                                          Navigator.of(context).pop();
                                         });
                                       },
                                     ),
                                   ),
                                 );
                               },
-                            );
+                            ).then((exit) {
+                              if (oldColor != list[i].color) {
+                                list[i].save();
+                              }
+                            });
                           },
                           color: list[i].color != null
                               ? Color(list[i].color)
