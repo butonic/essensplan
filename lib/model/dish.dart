@@ -16,7 +16,7 @@ class Dish extends HiveObject {
   HiveList<Category>? categories;
 
   @HiveField(3)
-  HiveList<Tag>? tags;
+  HiveList<Tag>? tags; // TODO remove tags? the app really only uses categoties
 
   @HiveField(4)
   bool? deleted;
