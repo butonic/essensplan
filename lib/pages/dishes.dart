@@ -1,3 +1,4 @@
+import 'package:essensplan/callbacks/dishes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 
@@ -30,6 +31,7 @@ class _DishesPageState extends State<DishesPage> {
   TextEditingController _searchQuery = TextEditingController();
 
   List<Category> selectedCategories = <Category>[];
+  List<Category> excludedCategories = <Category>[];
   List<Dish> filteredDishes = <Dish>[];
 
   bool andFilterCategories = false;
@@ -116,7 +118,8 @@ class _DishesPageState extends State<DishesPage> {
                             border: InputBorder.none,
                             hintStyle: TextStyle(fontStyle: FontStyle.italic)),
                         onChanged: (String q) {
-                          updateSearchQuery(q, selectedCategories);
+                          updateSearchQuery(
+                              q, selectedCategories, excludedCategories);
                         },
                       ),
                     ),
@@ -233,7 +236,8 @@ class _DishesPageState extends State<DishesPage> {
               onTap: () {
                 setState(() {
                   andFilterCategories = !andFilterCategories;
-                  updateSearchQuery(query, selectedCategories);
+                  updateSearchQuery(
+                      query, selectedCategories, excludedCategories);
                 });
               },
             ),
@@ -258,7 +262,8 @@ class _DishesPageState extends State<DishesPage> {
               onTap: () {
                 setState(() {
                   showDeleted = !showDeleted;
-                  updateSearchQuery(query, selectedCategories);
+                  updateSearchQuery(
+                      query, selectedCategories, excludedCategories);
                 });
               },
             ),
@@ -272,12 +277,19 @@ class _DishesPageState extends State<DishesPage> {
   void _clearSearchQuery() {
     setState(() {
       _searchQuery.clear();
-      updateSearchQuery(
-          '', selectedCategories); // TODO reset selected categories?
+      updateSearchQuery('', selectedCategories,
+          excludedCategories); // TODO reset selected categories?
     });
   }
 
   Widget _buildCategoryDropdown() {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Wrap(direction: Axis.horizontal, children: categoryChips.toList()),
+    );
+  }
+
+  Widget _buildCategoryDropdownOld() {
     List categories = Hive.box<Category>('categoryBox').toMap().values.toList();
     categories.sort((a, b) {
       if (a.order == null || b.order == null) {
@@ -293,6 +305,7 @@ class _DishesPageState extends State<DishesPage> {
         itemCount: categories.length, // required
         itemBuilder: (int index) {
           final c = categories[index];
+          final customData = _TagCustomData(category: categories[index]);
 
           return ItemTags(
             // Each ItemTags must contain a Key. Keys allow Flutter to
@@ -303,17 +316,19 @@ class _DishesPageState extends State<DishesPage> {
             color: c.color != null ? Color(c.color) : Colors.grey,
             // true if dish has this category
             active: false,
-            customData: c,
+            customData: customData,
             border: Border.all(
                 color: c.color != null ? Color(c.color) : Colors.grey),
             borderRadius: BorderRadius.all(Radius.circular(4)),
             onPressed: (Item item) {
+              // TODO evalute item.customData
+              // add excluded property?
               if (item.active == true) {
                 selectedCategories.add(item.customData);
               } else {
                 selectedCategories.remove(item.customData);
               }
-              updateSearchQuery(query, selectedCategories);
+              updateSearchQuery(query, selectedCategories, excludedCategories);
             },
           );
         },
@@ -321,7 +336,46 @@ class _DishesPageState extends State<DishesPage> {
     );
   }
 
-  void updateSearchQuery(String newQuery, List<Category> categories) async {
+  Iterable<Widget> get categoryChips sync* {
+    List categories = Hive.box<Category>('categoryBox').toMap().values.toList();
+    categories.sort((a, b) {
+      if (a.order == null || b.order == null) {
+        return 0;
+      } else {
+        return a.order.compareTo(b.order);
+      }
+    });
+    for (final Category category in categories) {
+      yield Padding(
+        padding: const EdgeInsets.only(left: 2, right: 2),
+        child: CategoryChip(
+          label: Text(category.name),
+          backgroundColor:
+              category.color != null ? Color(category.color!) : Colors.grey,
+          onTap: (selection) {
+            switch (selection) {
+              case CategoryChipSelection.unselected:
+                selectedCategories.remove(category);
+                excludedCategories.remove(category);
+                break;
+              case CategoryChipSelection.selected:
+                selectedCategories.add(category);
+                excludedCategories.remove(category);
+                break;
+              case CategoryChipSelection.excluded:
+                selectedCategories.remove(category);
+                excludedCategories.add(category);
+                break;
+            }
+            updateSearchQuery(query, selectedCategories, excludedCategories);
+          },
+        ),
+      );
+    }
+  }
+
+  void updateSearchQuery(String newQuery, List<Category> categories,
+      List<Category> excluded) async {
     filteredDishes.clear();
     // 1. filter notes
     var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
@@ -342,9 +396,9 @@ class _DishesPageState extends State<DishesPage> {
     }
 
     // if categories have been selected
-    if (categories.isNotEmpty == true) {
+    if (categories.isNotEmpty) {
       if (andFilterCategories) {
-        // only add dishes that have all of the selected the categories
+        // only add dishes that have all of the selected categories
         dishes =
             dishes.where((d) => d.categories!.toSet().containsAll(categories));
       } else {
@@ -354,10 +408,17 @@ class _DishesPageState extends State<DishesPage> {
       }
     }
 
+    if (excluded.isNotEmpty) {
+      dishes = dishes.where((d) =>
+          d.categories!.toSet().intersection(excluded.toSet()).length == 0);
+    }
+
     filteredDishes.addAll(dishes);
     filteredDishes.sort(sortFunctions[currentSortFunction]);
 
     // 3. filter categories
+    // TODO why do we clear the selected categories?
+    // TODO do we need to clear the excluded categories?
     if (selectedCategories != categories) {
       // we have new categories
       selectedCategories.clear();
@@ -407,5 +468,74 @@ class _DishesPageState extends State<DishesPage> {
       _clearSearchQuery();
       // TODO scroll to dish? may not be necessary
     }
+  }
+}
+
+class _TagCustomData {
+  Category category;
+  // either unselected, selected or excluded
+  int state;
+
+  _TagCustomData({required this.category, this.state = 0});
+}
+
+enum CategoryChipSelection { unselected, selected, excluded }
+
+class CategoryChip extends StatefulWidget {
+  CategoryChip(
+      {Key? key,
+      required this.label,
+      required this.backgroundColor,
+      required this.onTap})
+      : super(key: key);
+  final Text label;
+  final Color backgroundColor;
+  final CategoryChipTapCallback onTap;
+
+  @override
+  State<CategoryChip> createState() => _CategoryChipState();
+}
+
+class _CategoryChipState extends State<CategoryChip> {
+  CategoryChipSelection selection = CategoryChipSelection.unselected;
+  void nextSelection() {
+    setState(() {
+      switch (this.selection) {
+        case CategoryChipSelection.unselected:
+          this.selection = CategoryChipSelection.selected;
+          break;
+        case CategoryChipSelection.selected:
+          this.selection = CategoryChipSelection.excluded;
+          break;
+        case CategoryChipSelection.excluded:
+          this.selection = CategoryChipSelection.unselected;
+          break;
+      }
+      this.widget.onTap(this.selection);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Chip(
+        shape: StadiumBorder(side: BorderSide(color: widget.backgroundColor)),
+        label: widget.label,
+        labelStyle: TextStyle(
+            decoration: this.selection == CategoryChipSelection.excluded
+                ? TextDecoration.lineThrough
+                : null,
+            color: this.selection == CategoryChipSelection.unselected
+                ? widget.backgroundColor
+                : Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w400),
+        backgroundColor: this.selection != CategoryChipSelection.unselected
+            ? widget.backgroundColor
+            : Colors.white,
+        // TODO bring back shadow
+      ),
+      onTap: nextSelection,
+    );
   }
 }
