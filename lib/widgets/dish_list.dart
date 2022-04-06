@@ -44,7 +44,7 @@ class DishList extends StatelessWidget {
       // find index of targeted dish
       for (var i = 0; i < dishes.length; i++) {
         if (dishes.elementAt(i) == scrollTarget) {
-          // register a callback that is executed when tha list has been rendered
+          // register a callback that is executed when the list has been rendered
           SchedulerBinding.instance?.addPostFrameCallback((_) {
             if (itemScrollController.isAttached) {
               // we use jumpTo because the initialScrollIndex property does not work ... for whatever reason
