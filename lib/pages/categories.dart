@@ -56,7 +56,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Select a color'),
+                                  title: const Text('Select a color'),
                                   content: SingleChildScrollView(
                                     child: ColorPicker(
                                       enableAlpha: false,
@@ -88,7 +88,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Kategorie umbenennen'),
+                                  title: const Text('Kategorie umbenennen'),
                                   content: SingleChildScrollView(
                                     child: Column(children: [
                                       TextFormField(

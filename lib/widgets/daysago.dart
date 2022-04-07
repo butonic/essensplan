@@ -24,11 +24,11 @@ class DaysAgo extends StatelessWidget {
 
     switch (diff) {
       case -1:
-        return Text('Gestern');
+        return const Text('Gestern');
       case 0:
-        return Text('Heute');
+        return const Text('Heute');
       case 1:
-        return Text('Morgen');
+        return const Text('Morgen');
       default:
         if (diff < 0) {
           return Text('vor ' + (diff * -1).toString() + ' Tagen');

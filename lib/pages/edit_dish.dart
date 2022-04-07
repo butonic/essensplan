@@ -30,7 +30,7 @@ class EditDishPageState extends State<EditDishPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Gericht bearbeiten'), // TODO bearbeiten vs anlegen
+        title: const Text('Gericht bearbeiten'), // TODO bearbeiten vs anlegen
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -39,21 +39,21 @@ class EditDishPageState extends State<EditDishPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-                  child: Text(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                  child: const Text(
                     'Name',
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                     textAlign: TextAlign.left,
                   )),
               Padding(
-                  padding: EdgeInsets.fromLTRB(32, 0, 32, 4),
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
                   child: TextFormField(
                       initialValue: args.dish.name,
                       autofocus: true,
                       maxLines: 3,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                         hintText: 'Name des Gerichts eingeben',
                       ),
                       validator: (value) {
@@ -67,21 +67,21 @@ class EditDishPageState extends State<EditDishPage> {
                         args.dish.name = value ?? 'Unbekannt';
                       })),
               Padding(
-                  padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-                  child: Text(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                  child: const Text(
                     'Notizen',
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                     textAlign: TextAlign.left,
                   )),
               Padding(
-                  padding: EdgeInsets.fromLTRB(32, 0, 32, 4),
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
                   child: TextFormField(
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       initialValue: args.dish.note,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                         hintText: 'Notizen, Link, etc. zum Gericht eingeben',
                       ),
                       onSaved: (String? value) {

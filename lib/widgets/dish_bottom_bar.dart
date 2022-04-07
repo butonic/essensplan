@@ -29,7 +29,7 @@ class DishBottomBar extends StatelessWidget {
         children: [
           GestureDetector(
             child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -48,7 +48,7 @@ class DishBottomBar extends StatelessWidget {
           Spacer(),
           GestureDetector(
               child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
@@ -65,7 +65,7 @@ class DishBottomBar extends StatelessWidget {
               }),
           GestureDetector(
             child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,

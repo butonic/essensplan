@@ -87,7 +87,7 @@ class _DishesPageState extends State<DishesPage> {
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text('Gericht auswählen'),
+          title: const Text('Gericht auswählen'),
           actions: <Widget>[
             //IconButton(
             //  icon: Icon(Icons.developer_mode),
@@ -112,7 +112,8 @@ class _DishesPageState extends State<DishesPage> {
                         decoration: const InputDecoration(
                             hintText: 'Suche nach Name oder Notiz ...',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(fontStyle: FontStyle.italic)),
+                            hintStyle:
+                                const TextStyle(fontStyle: FontStyle.italic)),
                         onChanged: (String q) {
                           updateSearchQuery(
                               q, selectedCategories, excludedCategories);
@@ -185,7 +186,7 @@ class _DishesPageState extends State<DishesPage> {
                   : Hive.box<Dish>('dishBox').values == null
                       ? Center(child: CircularProgressIndicator())
                       : Center(
-                          child: Text('Kein Treffer'),
+                          child: const Text('Kein Treffer'),
                         ),
             ),
           ],
@@ -204,7 +205,7 @@ class _DishesPageState extends State<DishesPage> {
           children: [
             GestureDetector(
               child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
@@ -232,7 +233,7 @@ class _DishesPageState extends State<DishesPage> {
             Spacer(),
             GestureDetector(
               child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,

@@ -7,7 +7,7 @@ class EditNotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notiz bearbeiten'),
+        title: const Text('Notiz bearbeiten'),
       ),
       body: EditNoteForm(),
     );

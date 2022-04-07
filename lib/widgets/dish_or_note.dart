@@ -24,14 +24,14 @@ class DishOrNoteWidget extends StatefulWidget {
 }
 
 class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
-  Widget text = Text('Empty');
+  Widget text = const Text('Empty');
 
   bool editing = false;
 
   @override
   Widget build(BuildContext context) {
     if (widget.dish == null) {
-      text = Text('');
+      text = const Text('');
     } else if (widget.dish!.name != null) {
       text = Center(
           child: Padding(

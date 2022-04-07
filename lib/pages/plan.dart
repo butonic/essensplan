@@ -127,7 +127,7 @@ class _PlanPageState extends State<PlanPage> {
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Text(dish.name ?? dish.note ?? 'Fehlender Name und Notiz',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
                       fontWeight: FontWeight.bold)),
@@ -159,7 +159,7 @@ class _PlanPageState extends State<PlanPage> {
                 textAlign: TextAlign.center,
                 autofocus: true,
                 controller: TextEditingController(text: dish.note),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black87,
                   fontSize: 14,
                 ),
@@ -227,7 +227,7 @@ class _PlanPageState extends State<PlanPage> {
                   dm.entries![i].name ??
                       dm.entries![i].note ??
                       'Fehlender Name und Notiz',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
                       fontWeight: FontWeight.bold)),
@@ -236,8 +236,8 @@ class _PlanPageState extends State<PlanPage> {
                 width: MediaQuery.of(context).size.width - 20,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child:
-                      Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text('',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 )),
             child: Dismissible(
               key: UniqueKey(),

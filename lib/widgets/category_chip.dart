@@ -62,7 +62,7 @@ class _CategoryChipState extends State<CategoryChip> {
           // reduce size
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           labelPadding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
-          visualDensity: VisualDensity(vertical: -4),
+          visualDensity: const VisualDensity(vertical: -4),
           // shadow
           elevation: 3.0,
           shadowColor: Colors.black),

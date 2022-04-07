@@ -67,7 +67,7 @@ class DishList extends StatelessWidget {
     if (dishes[index].lastCookedDay > -1) {
       dateText = DaysAgo(days: dishes[index].lastCookedDay);
     } else {
-      dateText = Text('nie');
+      dateText = const Text('nie');
     }
 
     return Dismissible(
@@ -76,7 +76,7 @@ class DishList extends StatelessWidget {
         onDismissed(context, direction, dishes[index]);
       },
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         child: InkWell(
           onTap: () {
             onTap(context, dishes[index]);
@@ -113,7 +113,8 @@ class DishList extends StatelessWidget {
                   // TODO multiple text fields with different color? or richtext
                   dishes[index].categories?.map((e) => e.name).join(' ') ?? '',
                   // set some style to text
-                  style: TextStyle(fontSize: 12.0, color: Colors.lightGreen),
+                  style:
+                      const TextStyle(fontSize: 12.0, color: Colors.lightGreen),
                 ),
               ],
             ),

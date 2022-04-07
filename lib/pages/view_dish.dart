@@ -29,37 +29,37 @@ class _ViewDishPageState extends State<ViewDishPage> {
       key: _viewDishKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Gericht'),
+        title: const Text('Gericht'),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-                child: Text(
+                padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: const Text(
                   'Name',
                   style: TextStyle(color: Colors.black54, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
             Padding(
-                padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
+                padding: const EdgeInsets.fromLTRB(32, 20, 32, 4),
                 child: Text(
                   dish.name ?? 'Fehlender Name',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
             Padding(
-                padding: EdgeInsets.fromLTRB(16, 20, 4, 0),
-                child: Text(
+                padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: const Text(
                   'Notizen',
                   style: TextStyle(color: Colors.black54, fontSize: 16),
                   textAlign: TextAlign.left,
                 )),
             Padding(
-                padding: EdgeInsets.fromLTRB(32, 20, 32, 4),
+                padding: const EdgeInsets.fromLTRB(32, 20, 32, 4),
                 child: SelectableLinkify(
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.black45, fontStyle: FontStyle.italic),
                   text: (dish.note ?? 'Keine Notiz'),
                   onOpen: (link) async {
