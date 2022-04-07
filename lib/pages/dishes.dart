@@ -1,4 +1,4 @@
-import 'package:essensplan/callbacks/dishes.dart';
+import 'package:essensplan/widgets/category_chip.dart';
 import 'package:flutter/material.dart';
 
 import '../model/dish.dart';
@@ -126,16 +126,6 @@ class _DishesPageState extends State<DishesPage> {
                             onPressed: _clearSearchQuery)
                   ],
                 )),
-            /* caption is not really necessary
-            Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
-                child: Text(
-                  'Filtern nach Kategorien', // TODO umschalter und oder hier hin, nach rechts und dann text in klammern (eine|alle)
-                  style: TextStyle(color: Colors.black54, fontSize: 16),
-                  textAlign: TextAlign.left,
-                )),
-            // TODO kategorien einklappbar machen?
-            */
             _buildCategoryDropdown(),
             SizedBox(
                 height: 35,
@@ -306,6 +296,8 @@ class _DishesPageState extends State<DishesPage> {
           label: Text(category.name),
           backgroundColor:
               category.color != null ? Color(category.color!) : Colors.grey,
+          textColor:
+              category.color != null ? Color(category.color!) : Colors.black,
           onTap: (selection) {
             switch (selection) {
               case CategoryChipSelection.unselected:
@@ -421,71 +413,5 @@ class _DishesPageState extends State<DishesPage> {
       _clearSearchQuery();
       // TODO scroll to dish? may not be necessary
     }
-  }
-}
-
-enum CategoryChipSelection { unselected, selected, excluded }
-
-class CategoryChip extends StatefulWidget {
-  CategoryChip(
-      {Key? key,
-      required this.label,
-      required this.backgroundColor,
-      required this.onTap})
-      : super(key: key);
-  final Text label;
-  final Color backgroundColor;
-  final CategoryChipTapCallback onTap;
-
-  @override
-  State<CategoryChip> createState() => _CategoryChipState();
-}
-
-class _CategoryChipState extends State<CategoryChip> {
-  CategoryChipSelection selection = CategoryChipSelection.unselected;
-  void nextSelection() {
-    setState(() {
-      switch (this.selection) {
-        case CategoryChipSelection.unselected:
-          this.selection = CategoryChipSelection.selected;
-          break;
-        case CategoryChipSelection.selected:
-          this.selection = CategoryChipSelection.excluded;
-          break;
-        case CategoryChipSelection.excluded:
-          this.selection = CategoryChipSelection.unselected;
-          break;
-      }
-      this.widget.onTap(this.selection);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Chip(
-          shape: StadiumBorder(side: BorderSide(color: widget.backgroundColor)),
-          label: widget.label,
-          labelStyle: TextStyle(
-              decoration: this.selection == CategoryChipSelection.excluded
-                  ? TextDecoration.lineThrough
-                  : null,
-              color: this.selection == CategoryChipSelection.unselected
-                  ? widget.backgroundColor
-                  : Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w400),
-          backgroundColor: this.selection != CategoryChipSelection.unselected
-              ? widget.backgroundColor
-              : Colors.white,
-          // reduce size
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          labelPadding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
-          visualDensity: VisualDensity(vertical: -4),
-          // shadow
-          elevation: 3.0,
-          shadowColor: Colors.black),
-      onTap: nextSelection,
-    );
   }
 }

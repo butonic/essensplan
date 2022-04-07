@@ -220,7 +220,6 @@ class _PlanPageState extends State<PlanPage> {
         final dish = dm.entries![i];
         dishes.add(LongPressDraggable<DragData>(
             data: DragData(dm, i),
-            //dragAnchor: DragAnchor.pointer, // better leave child so we can see what we are dragging
             feedback: Card(
                 child: Padding(
               padding: const EdgeInsets.all(4.0),
@@ -241,7 +240,7 @@ class _PlanPageState extends State<PlanPage> {
                       Text('', style: TextStyle(fontWeight: FontWeight.bold)),
                 )),
             child: Dismissible(
-              key: UniqueKey(), //ValueKey('day-$day[${dish.hashCode}]'),
+              key: UniqueKey(),
               onDismissed: (direction) {
                 setState(() {
                   dm!.entries!.removeAt(i);
@@ -256,13 +255,6 @@ class _PlanPageState extends State<PlanPage> {
               child: DishOrNoteWidget(
                   dish: dish,
                   onTap: (context, dish) {
-                    // unfocus current text input
-                    // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-                    /*var currentFocus = FocusScope.of(context);
-                    if (!currentFocus.hasPrimaryFocus) {
-                      currentFocus.unfocus();
-                    }
-                    */
                     var bsc = bottomSheetController;
                     if (bsc != null) {
                       showActionButton = false;
@@ -279,30 +271,7 @@ class _PlanPageState extends State<PlanPage> {
                         selectedDay = day;
                       }
                     });
-                  } /* ,
-                 
-                  noteSuffix: selectedDay != day
-                      ? null
-                      // TODO notizen fühlen sich anders an / draggen sich anders als gerichte:
-                      // TextInput durch Text ersetzen? dann kann man  mit einem long press nicht sofort den text selektieren
-                      : LongPressDraggable<DragData>(
-                          data: DragData(dm, i),
-                          //dragAnchor: DragAnchor.pointer,
-                          feedback: Card(
-                              child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text(dish.name ?? dish.note,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                          )),
-                          child: Icon(
-                            Icons.drag_handle,
-                            size: 14,
-                          ))
-                          */
-                  ),
+                  }),
             )));
       }
     }
@@ -369,12 +338,6 @@ class _PlanPageState extends State<PlanPage> {
             children: dishes,
           ),
           onTap: () {
-            // unfocus current text input
-            // see https://flutterigniter.com/dismiss-keyboard-form-lose-focus/
-            /*var currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus) {
-              currentFocus.unfocus();
-            }*/
             var bsc = bottomSheetController;
             if (bsc != null) {
               showActionButton = true;
@@ -391,14 +354,7 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _selectDish(BuildContext context, int day) async {
-    // TODO dish zurückgeben https://flutter.dev/docs/cookbook/navigation/returning-data#interactive-example
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
     final result = await Navigator.pushNamed(context, '/dishes');
-    //final result = await Navigator.push(
-    //  context,
-    //  MaterialPageRoute<Dish>(builder: (context) => DishesPage()),
-    //);
 
     if (result is Dish) {
       setState(() {
@@ -422,8 +378,8 @@ class _PlanPageState extends State<PlanPage> {
 
   void _viewCategories(BuildContext context) async {
     await Navigator.pushNamed(
-      context, '/categories',
-      // arguments: ViewDishArguments(dish)
+      context,
+      '/categories',
     );
   }
 }
