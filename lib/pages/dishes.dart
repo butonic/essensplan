@@ -1,6 +1,5 @@
 import 'package:essensplan/callbacks/dishes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tags/flutter_tags.dart';
 
 import '../model/dish.dart';
 import '../model/day.dart';
@@ -18,8 +17,6 @@ class DishesPage extends StatefulWidget {
   @override
   _DishesPageState createState() => _DishesPageState();
 }
-
-final GlobalKey<TagsState> _dishesTagStateKey = GlobalKey<TagsState>();
 
 class _DishesPageState extends State<DishesPage> {
   static final GlobalKey<ScaffoldState> _dishesKey = GlobalKey<ScaffoldState>();

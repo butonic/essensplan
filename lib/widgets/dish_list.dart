@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:hive/hive.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import './daysago.dart';
-import '../model/day.dart';
 import '../model/dish.dart';
 import '../callbacks/dish.dart';
 
@@ -45,7 +43,7 @@ class DishList extends StatelessWidget {
       for (var i = 0; i < dishes.length; i++) {
         if (dishes.elementAt(i) == scrollTarget) {
           // register a callback that is executed when the list has been rendered
-          SchedulerBinding.instance?.addPostFrameCallback((_) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
             if (itemScrollController.isAttached) {
               // we use jumpTo because the initialScrollIndex property does not work ... for whatever reason
               itemScrollController.jumpTo(index: i);
