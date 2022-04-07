@@ -129,6 +129,7 @@ class _DishesPageState extends State<DishesPage> {
                             onPressed: _clearSearchQuery)
                   ],
                 )),
+            /* caption is not really necessary
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 10, 4, 0),
                 child: Text(
@@ -137,6 +138,7 @@ class _DishesPageState extends State<DishesPage> {
                   textAlign: TextAlign.left,
                 )),
             // TODO kategorien einklappbar machen?
+            */
             _buildCategoryDropdown(),
             SizedBox(
                 height: 35,
@@ -283,55 +285,11 @@ class _DishesPageState extends State<DishesPage> {
 
   Widget _buildCategoryDropdown() {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Wrap(direction: Axis.horizontal, children: categoryChips.toList()),
-    );
-  }
-
-  Widget _buildCategoryDropdownOld() {
-    List categories = Hive.box<Category>('categoryBox').toMap().values.toList();
-    categories.sort((a, b) {
-      if (a.order == null || b.order == null) {
-        return 0;
-      } else {
-        return a.order.compareTo(b.order);
-      }
-    });
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Tags(
-        key: _dishesTagStateKey,
-        itemCount: categories.length, // required
-        itemBuilder: (int index) {
-          final c = categories[index];
-          final customData = _TagCustomData(category: categories[index]);
-
-          return ItemTags(
-            // Each ItemTags must contain a Key. Keys allow Flutter to
-            // uniquely identify widgets.
-            key: Key(index.toString()),
-            index: index, // required
-            title: c.name,
-            color: c.color != null ? Color(c.color) : Colors.grey,
-            // true if dish has this category
-            active: false,
-            customData: customData,
-            border: Border.all(
-                color: c.color != null ? Color(c.color) : Colors.grey),
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            onPressed: (Item item) {
-              // TODO evalute item.customData
-              // add excluded property?
-              if (item.active == true) {
-                selectedCategories.add(item.customData);
-              } else {
-                selectedCategories.remove(item.customData);
-              }
-              updateSearchQuery(query, selectedCategories, excludedCategories);
-            },
-          );
-        },
-      ),
+      padding: const EdgeInsets.fromLTRB(12, 3, 12, 3),
+      child: Wrap(
+          direction: Axis.horizontal,
+          runSpacing: 3.0, // spacing between lines
+          children: categoryChips.toList()),
     );
   }
 
@@ -469,14 +427,6 @@ class _DishesPageState extends State<DishesPage> {
   }
 }
 
-class _TagCustomData {
-  Category category;
-  // either unselected, selected or excluded
-  int state;
-
-  _TagCustomData({required this.category, this.state = 0});
-}
-
 enum CategoryChipSelection { unselected, selected, excluded }
 
 class CategoryChip extends StatefulWidget {
@@ -517,22 +467,27 @@ class _CategoryChipState extends State<CategoryChip> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Chip(
-        shape: StadiumBorder(side: BorderSide(color: widget.backgroundColor)),
-        label: widget.label,
-        labelStyle: TextStyle(
-            decoration: this.selection == CategoryChipSelection.excluded
-                ? TextDecoration.lineThrough
-                : null,
-            color: this.selection == CategoryChipSelection.unselected
-                ? widget.backgroundColor
-                : Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w400),
-        backgroundColor: this.selection != CategoryChipSelection.unselected
-            ? widget.backgroundColor
-            : Colors.white,
-        // TODO bring back shadow
-      ),
+          shape: StadiumBorder(side: BorderSide(color: widget.backgroundColor)),
+          label: widget.label,
+          labelStyle: TextStyle(
+              decoration: this.selection == CategoryChipSelection.excluded
+                  ? TextDecoration.lineThrough
+                  : null,
+              color: this.selection == CategoryChipSelection.unselected
+                  ? widget.backgroundColor
+                  : Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w400),
+          backgroundColor: this.selection != CategoryChipSelection.unselected
+              ? widget.backgroundColor
+              : Colors.white,
+          // reduce size
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          labelPadding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+          visualDensity: VisualDensity(vertical: -4),
+          // shadow
+          elevation: 3.0,
+          shadowColor: Colors.black),
       onTap: nextSelection,
     );
   }
