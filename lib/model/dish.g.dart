@@ -20,9 +20,8 @@ class DishAdapter extends TypeAdapter<Dish> {
       name: fields[0] as String?,
       note: fields[1] as String?,
       deleted: fields[4] as bool?,
-    )
-      ..categories = (fields[2] as HiveList?)?.castHiveList()
-      ..tags = (fields[3] as HiveList?)?.castHiveList();
+    )..categories = (fields[2] as HiveList?)?.castHiveList();
+    //..tags = (fields[3] as HiveList?)?.castHiveList();
   }
 
   @override
@@ -35,8 +34,9 @@ class DishAdapter extends TypeAdapter<Dish> {
       ..write(obj.note)
       ..writeByte(2)
       ..write(obj.categories)
-      ..writeByte(3)
-      ..write(obj.tags)
+      // tags no longer needed
+      //..writeByte(3)
+      //..write(obj.tags)
       ..writeByte(4)
       ..write(obj.deleted);
   }

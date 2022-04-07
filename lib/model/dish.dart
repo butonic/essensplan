@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import 'category.dart';
-import 'tag.dart';
 
 part 'dish.g.dart';
 
@@ -15,8 +14,8 @@ class Dish extends HiveObject {
   @HiveField(2)
   HiveList<Category>? categories;
 
-  @HiveField(3)
-  HiveList<Tag>? tags; // TODO remove tags? the app really only uses categoties
+  //@HiveField(3)
+  //HiveList<Tag>? tags; // was never used
 
   @HiveField(4)
   bool? deleted;

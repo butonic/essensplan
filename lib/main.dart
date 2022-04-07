@@ -13,7 +13,6 @@ import 'pages/edit_dish.dart';
 import 'model/category.dart';
 import 'model/day.dart';
 import 'model/dish.dart';
-import 'model/tag.dart';
 
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -24,13 +23,11 @@ void main() async {
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(DayAdapter());
   Hive.registerAdapter(DishAdapter());
-  Hive.registerAdapter(TagAdapter());
 
   // open hive boxes
   await Hive.openBox<Category>('categoryBox');
   await Hive.openBox<Day>('dayBox');
   await Hive.openBox<Dish>('dishBox');
-  await Hive.openBox<Tag>('tagBox');
 
   Intl.defaultLocale = 'de_DE';
 

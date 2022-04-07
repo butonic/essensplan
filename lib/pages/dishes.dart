@@ -5,7 +5,6 @@ import 'package:flutter_tags/flutter_tags.dart';
 import '../model/dish.dart';
 import '../model/day.dart';
 import '../model/category.dart';
-import '../model/tag.dart';
 import '../widgets/dish_list.dart';
 import 'package:hive/hive.dart';
 
@@ -448,7 +447,6 @@ class _DishesPageState extends State<DishesPage> {
   void _newDish(BuildContext context) async {
     var d = Dish();
     d.categories = HiveList(Hive.box<Category>('categoryBox'));
-    d.tags = HiveList(Hive.box<Tag>('tagBox'));
     final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
         arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
 
