@@ -29,13 +29,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
       body: ValueListenableBuilder(
         builder: (context, Box<Category> box, child) {
           var raw = box.toMap();
-          List list = raw.values.toList();
+          List<Category> list = raw.values.toList();
           list.sort((a, b) {
-            if (a.order == null || b.order == null) {
-              return 0;
-            } else {
-              return a.order.compareTo(b.order);
-            }
+            return a.order.compareTo(b.order);
           });
           var children = List.generate(
               list.length,
@@ -43,7 +39,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     key: ObjectKey(list[i]),
                     onDismissed: (direction) {
                       setState(() {
-                        list.removeAt(i);
                         list[i].delete();
                       });
                     },
@@ -61,7 +56,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                     child: ColorPicker(
                                       enableAlpha: false,
                                       pickerColor: list[i].color != null
-                                          ? Color(list[i].color)
+                                          ? Color(list[i].color!)
                                           : Colors.grey,
                                       onColorChanged: (Color color) {
                                         setState(() {
@@ -79,7 +74,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                             });
                           },
                           color: list[i].color != null
-                              ? Color(list[i].color)
+                              ? Color(list[i].color!)
                               : Colors.grey,
                         ),
                         title: Text(list[i].name),
