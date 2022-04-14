@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
@@ -26,6 +27,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
       ),
+      bottomNavigationBar: BottomAppBar(
+          child: Row()), // This is needed to not hide the last item in the list
       body: ValueListenableBuilder(
         builder: (context, Box<Category> box, child) {
           var raw = box.toMap();
@@ -50,20 +53,39 @@ class _CategoriesPageState extends State<CategoriesPage> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
+                                final textController = TextEditingController();
                                 return AlertDialog(
-                                  title: const Text('Select a color'),
+                                  title: const Text('Farbe wählen'),
                                   content: SingleChildScrollView(
-                                    child: ColorPicker(
-                                      enableAlpha: false,
-                                      pickerColor: list[i].color != null
-                                          ? Color(list[i].color!)
-                                          : Colors.grey,
-                                      onColorChanged: (Color color) {
-                                        setState(() {
-                                          list[i].color = color.value;
-                                        });
-                                      },
-                                    ),
+                                    child: Column(children: [
+                                      ColorPicker(
+                                        pickerAreaHeightPercent: 0.6,
+                                        showLabel: false,
+                                        enableAlpha: false,
+                                        pickerColor: list[i].color != null
+                                            ? Color(list[i].color!)
+                                            : Colors.grey,
+                                        hexInputController: textController,
+                                        onColorChanged: (Color color) {
+                                          setState(() {
+                                            list[i].color = color.value;
+                                          });
+                                        },
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: TextField(
+                                          controller: textController,
+                                          autofocus: true,
+                                          maxLength: 9,
+                                          inputFormatters: [
+                                            UpperCaseTextFormatter(),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(kValidHexPattern)),
+                                          ],
+                                        ),
+                                      )
+                                    ]),
                                   ),
                                 );
                               },
@@ -101,7 +123,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                         onFieldSubmitted: (newValue) {
                                           if (newValue.isNotEmpty) {
                                             setState(() {
-                                              list[i].name = newValue;
+                                              list[i].name = newValue.trim();
                                               list[i].save();
                                               Navigator.of(context).pop();
                                             });
@@ -140,4 +162,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
     );
   }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(_, TextEditingValue nv) =>
+      TextEditingValue(text: nv.text.toUpperCase(), selection: nv.selection);
 }
