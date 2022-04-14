@@ -102,7 +102,7 @@ class EditDishPageState extends State<EditDishPage> {
                       var cat = args.categories.values.firstWhere(
                         ((e) => e.name == str),
                         orElse: () => Category(
-                            name: str,
+                            name: str.trim(),
                             id: Uuid().v4(),
                             order: args.categories.length), // add as last item
                       );
