@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hive/hive.dart';
@@ -18,6 +19,15 @@ class ViewDishPage extends StatefulWidget {
 class _ViewDishPageState extends State<ViewDishPage> {
   static final GlobalKey<ScaffoldState> _viewDishKey =
       GlobalKey<ScaffoldState>();
+
+  Future<void> _editDish(BuildContext context, Dish d) async {
+    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
+        arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
+
+    if (editedArgs is EditDishArguments) {
+      await editedArgs.dish.save();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +124,4 @@ class ViewDishArguments {
   final Dish dish;
 
   ViewDishArguments(this.dish);
-}
-
-Future _editDish(BuildContext context, Dish d) async {
-  final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-      arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
-
-  if (editedArgs is EditDishArguments) {
-    await editedArgs.dish.save();
-  }
 }

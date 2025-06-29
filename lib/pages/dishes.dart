@@ -218,7 +218,7 @@ class _DishesPageState extends State<DishesPage> {
                         andFilterCategories
                             ? 'Alle Kategorien'
                             : 'Eine der Kategorien',
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       )
                     ],
                   )),
@@ -240,7 +240,7 @@ class _DishesPageState extends State<DishesPage> {
                     children: <Widget>[
                       Text(
                         showDeleted ? 'gelöschte Gerichte' : 'Gerichte',
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                       SizedBox(width: 4),
                       Icon(showDeleted

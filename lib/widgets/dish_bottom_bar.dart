@@ -37,7 +37,7 @@ class DishBottomBar extends StatelessWidget {
                     Icon(Icons.today),
                     Text(
                       'Heute',
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     )
                   ],
                 )),
@@ -56,7 +56,7 @@ class DishBottomBar extends StatelessWidget {
                       Icon(Icons.note_add),
                       Text(
                         'Notiz',
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       )
                     ],
                   )),
@@ -76,7 +76,7 @@ class DishBottomBar extends StatelessWidget {
                     ),
                     Text(
                       'Kategorien',
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     )
                   ],
                 )),

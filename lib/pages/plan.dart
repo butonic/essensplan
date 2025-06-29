@@ -320,7 +320,7 @@ class _PlanPageState extends State<PlanPage> {
                 style: TextStyle(
                     color: day == selectedDay
                         ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).textTheme.bodyText1?.color,
+                        : Theme.of(context).textTheme.bodyLarge?.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 16),
               ),
@@ -329,7 +329,7 @@ class _PlanPageState extends State<PlanPage> {
                 style: TextStyle(
                   color: day == selectedDay
                       ? Theme.of(context).colorScheme.secondary
-                      : Theme.of(context).textTheme.bodyText1?.color,
+                      : Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ],
