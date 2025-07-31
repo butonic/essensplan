@@ -21,7 +21,7 @@ class PlanPage extends StatefulWidget {
   const PlanPage({super.key});
 
   @override
-  _PlanPageState createState() => _PlanPageState();
+  State<PlanPage> createState() => _PlanPageState();
 }
 
 class DragData {

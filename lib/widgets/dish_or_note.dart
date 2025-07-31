@@ -12,7 +12,7 @@ class DishOrNoteWidget extends StatefulWidget {
   const DishOrNoteWidget({super.key, this.dish, required this.onTap});
 
   @override
-  _DishOrNoteWidgetState createState() => _DishOrNoteWidgetState();
+  State<DishOrNoteWidget> createState() => _DishOrNoteWidgetState();
 }
 
 class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {

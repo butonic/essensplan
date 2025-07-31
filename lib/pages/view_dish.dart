@@ -14,7 +14,7 @@ class ViewDishPage extends StatefulWidget {
   const ViewDishPage({super.key});
 
   @override
-  _ViewDishPageState createState() => _ViewDishPageState();
+  State<ViewDishPage> createState() => _ViewDishPageState();
 }
 
 class _ViewDishPageState extends State<ViewDishPage> {

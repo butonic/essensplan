@@ -15,7 +15,7 @@ class DishesPage extends StatefulWidget {
   const DishesPage({super.key});
 
   @override
-  _DishesPageState createState() => _DishesPageState();
+  State<DishesPage> createState() => _DishesPageState();
 }
 
 class _DishesPageState extends State<DishesPage> {
