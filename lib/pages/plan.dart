@@ -278,8 +278,10 @@ class _PlanPageState extends State<PlanPage> {
                 candidate?.source.entries?[candidate.index],
               );
             },
-            onWillAccept: (data) => true, // TODO ignore direct neighbors
-            onAccept: (data) {
+            onWillAcceptWithDetails: (details) =>
+                true, // TODO ignore direct neighbors
+            onAcceptWithDetails: (details) {
+              final data = details.data;
               setState(() {
                 if (data.source.entries != null) {
                   dm!.entries!.insert(i, data.source.entries![data.index]);
@@ -373,8 +375,10 @@ class _PlanPageState extends State<PlanPage> {
             candidate?.source.entries?[candidate.index],
           );
         },
-        onWillAccept: (data) => true, // TODO ignore direct neighbors
-        onAccept: (data) {
+        onWillAcceptWithDetails: (details) =>
+            true, // TODO ignore direct neighbors
+        onAcceptWithDetails: (details) {
+          final data = details.data;
           setState(() {
             if (dm == null) {
               dm = Day();
