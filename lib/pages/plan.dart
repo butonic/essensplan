@@ -664,15 +664,17 @@ class _PlanPageState extends State<PlanPage> {
     try {
       final dateStr = DateFormat('dd.MM.yyyy').format(DateTime.now());
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text:
-            'Essensplan Export vom $dateStr\n\n'
-            'Inhalt:\n'
-            '• $categories Kategorien\n'
-            '• $dishes Gerichte\n'
-            '• $days Tage mit Einträgen',
-        subject: 'Essensplan Export - $dateStr',
+      await SharePlus.instance.share(
+        ShareParams(
+          text:
+              'Essensplan Export vom $dateStr\n\n'
+              'Inhalt:\n'
+              '• $categories Kategorien\n'
+              '• $dishes Gerichte\n'
+              '• $days Tage mit Einträgen',
+          subject: 'Essensplan Export - $dateStr',
+          files: [XFile(file.path)],
+        ),
       );
     } catch (e) {
       print('Fehler beim Teilen: $e');
