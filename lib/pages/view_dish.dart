@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../model/dish.dart';
@@ -29,6 +30,57 @@ class _ViewDishPageState extends State<ViewDishPage> {
       await editedArgs.dish.save();
     }
   }
+  
+  List<InlineSpan> _buildInteractiveSpans(BuildContext context, String text) {
+  final RegExp urlRegExp = RegExp(r'(https?:\/\/[^\s]+)', caseSensitive: false);
+  final List<InlineSpan> spans = [];
+  int start = 0;
+
+  for (final match in urlRegExp.allMatches(text)) {
+    if (match.start > start) {
+      spans.add(TextSpan(text: text.substring(start, match.start)));
+    }
+
+    final String url = match.group(0)!;
+
+    spans.add(
+      WidgetSpan(
+        child: GestureDetector(
+          onTap: () async {
+            print('Link angetippt: $url');
+            final uri = Uri.parse(url);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else {
+              print('Kann URL nicht starten: $url');
+            }
+          },
+          onLongPress: () {
+            Clipboard.setData(ClipboardData(text: url));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Link kopiert: $url')),
+            );
+          },
+          child: Text(
+            url,
+            style: const TextStyle(
+              color: Colors.blue,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    start = match.end;
+  }
+
+  if (start < text.length) {
+    spans.add(TextSpan(text: text.substring(start)));
+  }
+
+  return spans;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -69,45 +121,18 @@ class _ViewDishPageState extends State<ViewDishPage> {
                 )),
             Padding(
                 padding: const EdgeInsets.fromLTRB(32, 20, 32, 4),
-                child: SelectableLinkify(
-                  style: const TextStyle(
-                      color: Colors.black45, fontStyle: FontStyle.italic),
-                  text: (dish.note ?? 'Keine Notiz'),
-                  onOpen: (link) async {
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      color: Colors.black45,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 16,
+                    ),
+                    children: _buildInteractiveSpans(context, dish.note ?? 'Keine Notiz'),
+                  ),
+                ),
 
-                    try {
-                      final uri = Uri.parse(link.url);
-                      
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      } else {
-                        // Fallback für spezielle URLs
-                        await launchUrl(uri, mode: LaunchMode.platformDefault);
-                      }
-
-                    } catch (e) {
-                      // Fehler-Feedback für Benutzer
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Link konnte nicht geöffnet werden: ${link.url}'),
-                          backgroundColor: Colors.red,
-                          action: SnackBarAction(
-                            label: 'Kopieren',
-                            textColor: Colors.white,
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: link.url.toString()));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Link in Zwischenablage kopiert')),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    }               },
-                )),
+            ),
             Divider(),
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
