@@ -5,7 +5,7 @@ import '../model/dish.dart';
 import '../model/day.dart';
 import '../model/category.dart';
 import '../widgets/dish_list.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 import 'edit_dish.dart';
 

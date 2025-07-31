@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tags/flutter_tags.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -73,12 +74,39 @@ class _ViewDishPageState extends State<ViewDishPage> {
                       color: Colors.black45, fontStyle: FontStyle.italic),
                   text: (dish.note ?? 'Keine Notiz'),
                   onOpen: (link) async {
-                    if (await canLaunch(link.url)) {
-                      await launch(link.url);
-                    } else {
-                      throw 'Konnte $link nicht öffnen';
-                    }
-                  },
+
+                    try {
+                      final uri = Uri.parse(link.url);
+                      
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      } else {
+                        // Fallback für spezielle URLs
+                        await launchUrl(uri, mode: LaunchMode.platformDefault);
+                      }
+
+                    } catch (e) {
+                      // Fehler-Feedback für Benutzer
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Link konnte nicht geöffnet werden: ${link.url}'),
+                          backgroundColor: Colors.red,
+                          action: SnackBarAction(
+                            label: 'Kopieren',
+                            textColor: Colors.white,
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: link.url.toString()));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Link in Zwischenablage kopiert')),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    }               },
                 )),
             Divider(),
             Padding(
