@@ -180,7 +180,7 @@ class _PlanPageState extends State<PlanPage> {
   //  will return a widget used as an indicator for the drop position
   Widget _buildDropPreview(BuildContext context, Dish? dish) {
     if (dish == null) {
-      return Container(
+      return SizedBox(
         width: double.infinity,
         height: 4, // to make up for the EdgeInset of 4.0
       );

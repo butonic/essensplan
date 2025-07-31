@@ -67,7 +67,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                   hexInputController: textController,
                                   onColorChanged: (Color color) {
                                     setState(() {
-                                      list[i].color = color.value;
+                                      list[i].color = color.toARGB32();
                                     });
                                   },
                                 ),

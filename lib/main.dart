@@ -30,12 +30,14 @@ void main() async {
 
   Intl.defaultLocale = 'de_DE';
 
-  await initializeDateFormatting('de_DE', null)
-      .then((_) => runApp(EssensplanApp()));
+  await initializeDateFormatting(
+    'de_DE',
+    null,
+  ).then((_) => runApp(EssensplanApp()));
 
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.lightGreen,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(statusBarColor: Colors.lightGreen),
+  );
 }
 
 //A page is considered a stateful widget that covers the entire navigation screen.
@@ -47,6 +49,8 @@ void main() async {
 // each day can have multiple dishes and notes
 
 class EssensplanApp extends StatelessWidget {
+  const EssensplanApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
