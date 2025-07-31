@@ -203,8 +203,6 @@ class _DishesPageState extends State<DishesPage> {
                             );
                           },
                     )
-                  : Hive.box<Dish>('dishBox').values == null
-                  ? Center(child: CircularProgressIndicator())
                   : Center(child: const Text('Kein Treffer')),
             ),
           ],
