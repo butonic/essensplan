@@ -566,6 +566,9 @@ class _PlanPageState extends State<PlanPage> {
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(jsonString);
 
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+
       // Statistiken
       int totalDishes = exportData['dishes'].length;
       int totalDays = exportData['days'].length;
@@ -573,7 +576,7 @@ class _PlanPageState extends State<PlanPage> {
 
       // Export-Dialog mit Statistiken anzeigen
       showDialog(
-        context: context,
+        context: this.context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Row(
@@ -643,7 +646,10 @@ class _PlanPageState extends State<PlanPage> {
         },
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(this.context).showSnackBar(
         SnackBar(
           content: Text('Fehler beim Export: $e'),
           backgroundColor: Colors.red,
@@ -689,6 +695,9 @@ class _PlanPageState extends State<PlanPage> {
       final file = File(result.files.first.path!);
       final jsonString = await file.readAsString();
 
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+
       // JSON parsen
       Map<String, dynamic> importData;
       try {
@@ -715,15 +724,21 @@ class _PlanPageState extends State<PlanPage> {
       int dishesToImport = (importData['dishes'] as List?)?.length ?? 0;
       int daysToImport = (importData['days'] as Map?)?.length ?? 0;
 
+      // Check if widget is still mounted before showing dialog
+      if (!mounted) return;
+
       // Import-Modus wählen
       ImportMode? importMode = await _showImportModeDialog(
-        context,
+        this.context,
         categoriesToImport,
         dishesToImport,
         daysToImport,
       );
 
       if (importMode == null) return;
+
+      // Check if widget is still mounted before proceeding
+      if (!mounted) return;
 
       // Import durchführen
       ImportResult importResult = await _performImport(
@@ -734,10 +749,16 @@ class _PlanPageState extends State<PlanPage> {
         importMode,
       );
 
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+
       // Ergebnis anzeigen
-      _showImportResultDialog(context, importResult);
+      _showImportResultDialog(this.context, importResult);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(this.context).showSnackBar(
         SnackBar(
           content: Text('Fehler beim Import: $e'),
           backgroundColor: Colors.red,
