@@ -14,6 +14,8 @@ class EditDishArguments {
 }
 
 class EditDishPage extends StatefulWidget {
+  const EditDishPage({super.key});
+
   @override
   EditDishPageState createState() => EditDishPageState();
 }
@@ -39,54 +41,60 @@ class EditDishPageState extends State<EditDishPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
-                  child: const Text(
-                    'Name',
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
-                    textAlign: TextAlign.left,
-                  )),
+                padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: const Text(
+                  'Name',
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                ),
+              ),
               Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
-                  child: TextFormField(
-                      initialValue: args.dish.name,
-                      autofocus: true,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
-                        hintText: 'Name des Gerichts eingeben',
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Bitte einen namen eingeben';
-                        }
-                        return null;
-                      },
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onSaved: (String? value) {
-                        args.dish.name = value ?? 'Unbekannt';
-                      })),
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
+                child: TextFormField(
+                  initialValue: args.dish.name,
+                  autofocus: true,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintStyle: const TextStyle(fontStyle: FontStyle.italic),
+                    hintText: 'Name des Gerichts eingeben',
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Bitte einen namen eingeben';
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onSaved: (String? value) {
+                    args.dish.name = value ?? 'Unbekannt';
+                  },
+                ),
+              ),
               Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
-                  child: const Text(
-                    'Notizen',
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
-                    textAlign: TextAlign.left,
-                  )),
+                padding: const EdgeInsets.fromLTRB(16, 20, 4, 0),
+                child: const Text(
+                  'Notizen',
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                  textAlign: TextAlign.left,
+                ),
+              ),
               Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
-                  child: TextFormField(
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      initialValue: args.dish.note,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
-                        hintText: 'Notizen, Link, etc. zum Gericht eingeben',
-                      ),
-                      onSaved: (String? value) {
-                        args.dish.note = value ?? 'Unbekannt';
-                      })),
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 4),
+                child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  initialValue: args.dish.note,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintStyle: const TextStyle(fontStyle: FontStyle.italic),
+                    hintText: 'Notizen, Link, etc. zum Gericht eingeben',
+                  ),
+                  onSaved: (String? value) {
+                    args.dish.note = value ?? 'Unbekannt';
+                  },
+                ),
+              ),
               Divider(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
@@ -102,9 +110,10 @@ class EditDishPageState extends State<EditDishPage> {
                       var cat = args.categories.values.firstWhere(
                         ((e) => e.name == str),
                         orElse: () => Category(
-                            name: str.trim(),
-                            id: Uuid().v4(),
-                            order: args.categories.length), // add as last item
+                          name: str.trim(),
+                          id: Uuid().v4(),
+                          order: args.categories.length,
+                        ), // add as last item
                       );
                       // Add item to the data source.
                       setState(() {
@@ -128,17 +137,20 @@ class EditDishPageState extends State<EditDishPage> {
                       index: index, // required
                       title: c?.name ?? 'Unbekannt',
                       color: Colors.white,
-                      textColor:
-                          c?.color != null ? Color(c!.color!) : Colors.black,
+                      textColor: c?.color != null
+                          ? Color(c!.color!)
+                          : Colors.black,
                       border: Border.all(
-                          color: c?.color != null
-                              ? Color(c!.color!)
-                              : Colors.grey),
+                        color: c?.color != null
+                            ? Color(c!.color!)
+                            : Colors.grey,
+                      ),
                       // true if dish has this category
                       active: args.dish.categories?.contains(c) ?? false,
                       textActiveColor: Colors.white,
-                      activeColor:
-                          c?.color != null ? Color(c!.color!) : Colors.grey,
+                      activeColor: c?.color != null
+                          ? Color(c!.color!)
+                          : Colors.grey,
 
                       customData: c,
                       onPressed: (Item item) {

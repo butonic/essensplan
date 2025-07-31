@@ -9,11 +9,7 @@ class DishOrNoteWidget extends StatefulWidget {
   /// Called when the user taps a dish.
   final DishTapCallback onTap;
 
-  DishOrNoteWidget({
-    Key? key,
-    this.dish,
-    required this.onTap,
-  }) : super(key: key);
+  const DishOrNoteWidget({super.key, this.dish, required this.onTap});
 
   @override
   _DishOrNoteWidgetState createState() => _DishOrNoteWidgetState();
@@ -30,37 +26,47 @@ class _DishOrNoteWidgetState extends State<DishOrNoteWidget> {
       text = const Text('');
     } else if (widget.dish!.name != null) {
       text = Center(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: GestureDetector(
-            child: Text(widget.dish!.name!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    decoration: widget.dish!.deleted != true
-                        ? TextDecoration.none
-                        : TextDecoration.lineThrough)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: GestureDetector(
+            child: Text(
+              widget.dish!.name!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                decoration: widget.dish!.deleted != true
+                    ? TextDecoration.none
+                    : TextDecoration.lineThrough,
+              ),
+            ),
             onTap: () {
               widget.onTap(context, widget.dish!);
-            }),
-      ));
+            },
+          ),
+        ),
+      );
     } else if (widget.dish!.note != null) {
       text = Center(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: GestureDetector(
-            child: Text(widget.dish!.note!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.black,
-                    decoration: widget.dish!.deleted != true
-                        ? TextDecoration.none
-                        : TextDecoration.lineThrough)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: GestureDetector(
+            child: Text(
+              widget.dish!.note!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                decoration: widget.dish!.deleted != true
+                    ? TextDecoration.none
+                    : TextDecoration.lineThrough,
+              ),
+            ),
             onTap: () {
               widget.onTap(context, widget.dish!);
-            }),
-      ));
+            },
+          ),
+        ),
+      );
     }
     return text;
   }

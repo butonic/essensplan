@@ -14,12 +14,12 @@ class DishBottomBar extends StatelessWidget {
   /// Called when the user taps on 'categories'.
   final PlanTapCategoriesCallback onTapCategories;
 
-  DishBottomBar({
-    Key? key,
+  const DishBottomBar({
+    super.key,
     required this.onTapToday,
     required this.onTapNewNote,
     required this.onTapCategories,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,57 +29,52 @@ class DishBottomBar extends StatelessWidget {
         children: [
           GestureDetector(
             child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(Icons.today),
-                    Text(
-                      'Heute',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  ],
-                )),
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Icons.today),
+                  Text('Heute', style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            ),
             onTap: () {
               onTapToday(context);
             },
           ),
           Spacer(),
           GestureDetector(
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(Icons.note_add),
-                      Text(
-                        'Notiz',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      )
-                    ],
-                  )),
-              onTap: () {
-                onTapNewNote(context);
-              }),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Icons.note_add),
+                  Text('Notiz', style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            ),
+            onTap: () {
+              onTapNewNote(context);
+            },
+          ),
           GestureDetector(
             child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      Icons.category,
-                      color: Colors.black38,
-                    ),
-                    Text(
-                      'Kategorien',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  ],
-                )),
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Icons.category, color: Colors.black38),
+                  Text(
+                    'Kategorien',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
             onTap: () {
               onTapCategories(context);
             },

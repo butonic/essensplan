@@ -12,7 +12,7 @@ import 'edit_dish.dart';
 // The DishesPage loads all dishes, categories and tags on startup
 // the categories and tags are usedy to build a filter for the db
 class DishesPage extends StatefulWidget {
-  DishesPage({Key? key}) : super(key: key);
+  const DishesPage({super.key});
 
   @override
   _DishesPageState createState() => _DishesPageState();
@@ -24,7 +24,7 @@ class _DishesPageState extends State<DishesPage> {
 
   Dish? scrollTarget;
 
-  TextEditingController _searchQuery = TextEditingController();
+  final TextEditingController _searchQuery = TextEditingController();
 
   List<Category> selectedCategories = <Category>[];
   List<Category> excludedCategories = <Category>[];
@@ -37,15 +37,15 @@ class _DishesPageState extends State<DishesPage> {
   List<int Function(Dish, Dish)> sortFunctions = [
     // by name asc
     (d1, d2) {
-      return (d1.name ?? '')
-          .toLowerCase()
-          .compareTo((d2.name ?? '').toLowerCase());
+      return (d1.name ?? '').toLowerCase().compareTo(
+        (d2.name ?? '').toLowerCase(),
+      );
     },
     // by name desc
     (d1, d2) {
-      return (d2.name ?? '')
-          .toLowerCase()
-          .compareTo((d1.name ?? '').toLowerCase());
+      return (d2.name ?? '').toLowerCase().compareTo(
+        (d1.name ?? '').toLowerCase(),
+      );
     },
     // by days asc
     (d1, d2) {
@@ -64,9 +64,11 @@ class _DishesPageState extends State<DishesPage> {
 
     // load all dishes
     setState(() {
-      filteredDishes.addAll(Hive.box<Dish>('dishBox')
-          .values
-          .where((dish) => dish.deleted != true && dish.name != null));
+      filteredDishes.addAll(
+        Hive.box<Dish>(
+          'dishBox',
+        ).values.where((dish) => dish.deleted != true && dish.name != null),
+      );
 
       // iterate over all days & dishes, set the last cooked day for the dish list
       Hive.box<Day>('dayBox').toMap().values.forEach((day) {
@@ -86,78 +88,88 @@ class _DishesPageState extends State<DishesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('Gericht auswählen'),
-          actions: <Widget>[
-            //IconButton(
-            //  icon: Icon(Icons.developer_mode),
-            //  onPressed: () {
-            //     Hive.box<Category>('categoryBox').clear();
-            //  },
-            //),
-          ]),
+        automaticallyImplyLeading: false,
+        title: const Text('Gericht auswählen'),
+        actions: <Widget>[
+          //IconButton(
+          //  icon: Icon(Icons.developer_mode),
+          //  onPressed: () {
+          //     Hive.box<Category>('categoryBox').clear();
+          //  },
+          //),
+        ],
+      ),
       body: Form(
         key: _dishesKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: _searchQuery,
-                        decoration: const InputDecoration(
-                            hintText: 'Suche nach Name oder Notiz ...',
-                            border: InputBorder.none,
-                            hintStyle:
-                                const TextStyle(fontStyle: FontStyle.italic)),
-                        onChanged: (String q) {
-                          updateSearchQuery(
-                              q, selectedCategories, excludedCategories);
-                        },
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _searchQuery,
+                      decoration: const InputDecoration(
+                        hintText: 'Suche nach Name oder Notiz ...',
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       ),
-                    ),
-                    _searchQuery.text.isEmpty
-                        ? Container()
-                        : IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: _clearSearchQuery)
-                  ],
-                )),
-            _buildCategoryDropdown(),
-            SizedBox(
-                height: 35,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      child: Text(currentSortFunction == 0
-                          ? 'Name ▲'
-                          : (currentSortFunction == 1
-                              ? 'Name ▼'
-                              : (currentSortFunction == 2
-                                  ? 'Tage ▲'
-                                  : (currentSortFunction == 3
-                                      ? 'Tage ▼'
-                                      : 'Zufällig')))),
-                      onPressed: () {
-                        setState(() {
-                          currentSortFunction++;
-                          if (currentSortFunction >= sortFunctions.length) {
-                            currentSortFunction = -1;
-                            filteredDishes.shuffle();
-                          } else {
-                            filteredDishes
-                                .sort(sortFunctions[currentSortFunction]);
-                          }
-                        });
+                      onChanged: (String q) {
+                        updateSearchQuery(
+                          q,
+                          selectedCategories,
+                          excludedCategories,
+                        );
                       },
                     ),
-                  ],
-                )),
+                  ),
+                  _searchQuery.text.isEmpty
+                      ? Container()
+                      : IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: _clearSearchQuery,
+                        ),
+                ],
+              ),
+            ),
+            _buildCategoryDropdown(),
+            SizedBox(
+              height: 35,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    child: Text(
+                      currentSortFunction == 0
+                          ? 'Name ▲'
+                          : (currentSortFunction == 1
+                                ? 'Name ▼'
+                                : (currentSortFunction == 2
+                                      ? 'Tage ▲'
+                                      : (currentSortFunction == 3
+                                            ? 'Tage ▼'
+                                            : 'Zufällig'))),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        currentSortFunction++;
+                        if (currentSortFunction >= sortFunctions.length) {
+                          currentSortFunction = -1;
+                          filteredDishes.shuffle();
+                        } else {
+                          filteredDishes.sort(
+                            sortFunctions[currentSortFunction],
+                          );
+                        }
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: filteredDishes.isNotEmpty
                   ? DishList(
@@ -165,29 +177,35 @@ class _DishesPageState extends State<DishesPage> {
                       scrollTarget: scrollTarget,
                       onTap: _selectedDish,
                       onLongPress: _editDish,
-                      onDismissed: (BuildContext context,
-                          DismissDirection direction, Dish dish) {
-                        setState(() {
-                          filteredDishes.remove(dish);
-                          if (dish.deleted == true) {
-                            dish.deleted = false;
-                          } else {
-                            // it might be null or false, in both cases set to true
-                            dish.deleted = true;
-                          }
-                          dish.save();
-                        });
-                        // Show a snackbar. This snackbar could also contain "Undo" actions.
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "${dish.name ?? dish.note} ${dish.deleted == true ? 'Gelöscht' : 'Wiederhergestellt'}")));
-                      },
+                      onDismissed:
+                          (
+                            BuildContext context,
+                            DismissDirection direction,
+                            Dish dish,
+                          ) {
+                            setState(() {
+                              filteredDishes.remove(dish);
+                              if (dish.deleted == true) {
+                                dish.deleted = false;
+                              } else {
+                                // it might be null or false, in both cases set to true
+                                dish.deleted = true;
+                              }
+                              dish.save();
+                            });
+                            // Show a snackbar. This snackbar could also contain "Undo" actions.
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "${dish.name ?? dish.note} ${dish.deleted == true ? 'Gelöscht' : 'Wiederhergestellt'}",
+                                ),
+                              ),
+                            );
+                          },
                     )
                   : Hive.box<Dish>('dishBox').values == null
-                      ? Center(child: CircularProgressIndicator())
-                      : Center(
-                          child: const Text('Kein Treffer'),
-                        ),
+                  ? Center(child: CircularProgressIndicator())
+                  : Center(child: const Text('Kein Treffer')),
             ),
           ],
         ),
@@ -205,54 +223,62 @@ class _DishesPageState extends State<DishesPage> {
           children: [
             GestureDetector(
               child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(andFilterCategories
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      andFilterCategories
                           ? Icons.border_outer
-                          : Icons.border_vertical),
-                      SizedBox(width: 4),
-                      Text(
-                        andFilterCategories
-                            ? 'Alle Kategorien'
-                            : 'Eine der Kategorien',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      )
-                    ],
-                  )),
+                          : Icons.border_vertical,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      andFilterCategories
+                          ? 'Alle Kategorien'
+                          : 'Eine der Kategorien',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
               onTap: () {
                 setState(() {
                   andFilterCategories = !andFilterCategories;
                   updateSearchQuery(
-                      query, selectedCategories, excludedCategories);
+                    query,
+                    selectedCategories,
+                    excludedCategories,
+                  );
                 });
               },
             ),
             Spacer(),
             GestureDetector(
               child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        showDeleted ? 'gelöschte Gerichte' : 'Gerichte',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      SizedBox(width: 4),
-                      Icon(showDeleted
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                    ],
-                  )),
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      showDeleted ? 'gelöschte Gerichte' : 'Gerichte',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    SizedBox(width: 4),
+                    Icon(showDeleted ? Icons.visibility : Icons.visibility_off),
+                  ],
+                ),
+              ),
               onTap: () {
                 setState(() {
                   showDeleted = !showDeleted;
                   updateSearchQuery(
-                      query, selectedCategories, excludedCategories);
+                    query,
+                    selectedCategories,
+                    excludedCategories,
+                  );
                 });
               },
             ),
@@ -266,8 +292,11 @@ class _DishesPageState extends State<DishesPage> {
   void _clearSearchQuery() {
     setState(() {
       _searchQuery.clear();
-      updateSearchQuery('', selectedCategories,
-          excludedCategories); // TODO reset selected categories?
+      updateSearchQuery(
+        '',
+        selectedCategories,
+        excludedCategories,
+      ); // TODO reset selected categories?
     });
   }
 
@@ -275,9 +304,10 @@ class _DishesPageState extends State<DishesPage> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 3, 12, 3),
       child: Wrap(
-          direction: Axis.horizontal,
-          runSpacing: 3.0, // spacing between lines
-          children: categoryChips.toList()),
+        direction: Axis.horizontal,
+        runSpacing: 3.0, // spacing between lines
+        children: categoryChips.toList(),
+      ),
     );
   }
 
@@ -295,10 +325,12 @@ class _DishesPageState extends State<DishesPage> {
         padding: const EdgeInsets.only(left: 2, right: 2),
         child: CategoryChip(
           label: Text(category.name),
-          backgroundColor:
-              category.color != null ? Color(category.color!) : Colors.grey,
-          textColor:
-              category.color != null ? Color(category.color!) : Colors.black,
+          backgroundColor: category.color != null
+              ? Color(category.color!)
+              : Colors.grey,
+          textColor: category.color != null
+              ? Color(category.color!)
+              : Colors.black,
           onTap: (selection) {
             switch (selection) {
               case CategoryChipSelection.unselected:
@@ -321,8 +353,11 @@ class _DishesPageState extends State<DishesPage> {
     }
   }
 
-  void updateSearchQuery(String newQuery, List<Category> categories,
-      List<Category> excluded) async {
+  void updateSearchQuery(
+    String newQuery,
+    List<Category> categories,
+    List<Category> excluded,
+  ) async {
     filteredDishes.clear();
     // 1. filter notes
     var dishes = Hive.box<Dish>('dishBox').values.where((d) => d.name != null);
@@ -346,18 +381,23 @@ class _DishesPageState extends State<DishesPage> {
     if (categories.isNotEmpty) {
       if (andFilterCategories) {
         // only add dishes that have all of the selected categories
-        dishes =
-            dishes.where((d) => d.categories!.toSet().containsAll(categories));
+        dishes = dishes.where(
+          (d) => (d.categories ?? []).toSet().containsAll(categories),
+        );
       } else {
         // add all dishes with any of the selected categories
         dishes = dishes.where(
-            (dish) => dish.categories!.any((dc) => categories.contains(dc)));
+          (dish) =>
+              (dish.categories ?? []).any((dc) => categories.contains(dc)),
+        );
       }
     }
 
     if (excluded.isNotEmpty) {
-      dishes = dishes.where((d) =>
-          d.categories!.toSet().intersection(excluded.toSet()).length == 0);
+      dishes = dishes.where(
+        (d) =>
+            (d.categories ?? []).toSet().intersection(excluded.toSet()).isEmpty,
+      );
     }
 
     filteredDishes.addAll(dishes);
@@ -395,8 +435,11 @@ class _DishesPageState extends State<DishesPage> {
   void _newDish(BuildContext context) async {
     var d = Dish();
     d.categories = HiveList(Hive.box<Category>('categoryBox'));
-    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-        arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')));
+    final editedArgs = await Navigator.pushNamed(
+      context,
+      '/dishes/edit',
+      arguments: EditDishArguments(d, Hive.box<Category>('categoryBox')),
+    );
 
     if (editedArgs is EditDishArguments) {
       await Hive.box<Dish>('dishBox').add(editedArgs.dish);
@@ -406,8 +449,11 @@ class _DishesPageState extends State<DishesPage> {
   }
 
   void _editDish(BuildContext context, Dish dish) async {
-    final editedArgs = await Navigator.pushNamed(context, '/dishes/edit',
-        arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')));
+    final editedArgs = await Navigator.pushNamed(
+      context,
+      '/dishes/edit',
+      arguments: EditDishArguments(dish, Hive.box<Category>('categoryBox')),
+    );
 
     if (editedArgs is EditDishArguments) {
       await editedArgs.dish.save();

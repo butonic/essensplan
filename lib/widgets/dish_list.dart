@@ -26,14 +26,14 @@ class DishList extends StatelessWidget {
   // TODO inject?
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
-  DishList(
-      {Key? key,
-      required this.dishes,
-      this.scrollTarget,
-      required this.onLongPress,
-      required this.onTap,
-      required this.onDismissed})
-      : super(key: key);
+  DishList({
+    super.key,
+    required this.dishes,
+    this.scrollTarget,
+    required this.onLongPress,
+    required this.onTap,
+    required this.onDismissed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +54,12 @@ class DishList extends StatelessWidget {
       }
     }
     return ScrollablePositionedList.builder(
-        //  initialScrollIndex: initialScrollIndex, // tried that, didn't work. using the hack above
-        itemCount: dishes.length,
-        itemScrollController: itemScrollController,
-        itemPositionsListener: itemPositionsListener,
-        itemBuilder: (BuildContext context, int index) => item(context, index));
+      //  initialScrollIndex: initialScrollIndex, // tried that, didn't work. using the hack above
+      itemCount: dishes.length,
+      itemScrollController: itemScrollController,
+      itemPositionsListener: itemPositionsListener,
+      itemBuilder: (BuildContext context, int index) => item(context, index),
+    );
   }
 
   // generate item for list
@@ -93,19 +94,20 @@ class DishList extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Expanded(
-                        child: Text(
-                      dishes[index].name ?? 'Unbekannt',
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      textWidthBasis: TextWidthBasis.parent,
-                      maxLines: 3,
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: dishes[index].deleted != true
-                            ? TextDecoration.none
-                            : TextDecoration.lineThrough,
+                      child: Text(
+                        dishes[index].name ?? 'Unbekannt',
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        textWidthBasis: TextWidthBasis.parent,
+                        maxLines: 3,
+                        style: TextStyle(
+                          fontSize: 16,
+                          decoration: dishes[index].deleted != true
+                              ? TextDecoration.none
+                              : TextDecoration.lineThrough,
+                        ),
                       ),
-                    )),
+                    ),
                     dateText,
                   ],
                 ),
@@ -113,8 +115,10 @@ class DishList extends StatelessWidget {
                   // TODO multiple text fields with different color? or richtext
                   dishes[index].categories?.map((e) => e.name).join(' ') ?? '',
                   // set some style to text
-                  style:
-                      const TextStyle(fontSize: 12.0, color: Colors.lightGreen),
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.lightGreen,
+                  ),
                 ),
               ],
             ),

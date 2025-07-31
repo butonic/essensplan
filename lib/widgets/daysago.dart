@@ -5,10 +5,7 @@ class DaysAgo extends StatelessWidget {
 
   final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
-  DaysAgo({
-    Key? key,
-    required this.days,
-  }) : super(key: key);
+  DaysAgo({super.key, required this.days});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +28,9 @@ class DaysAgo extends StatelessWidget {
         return const Text('Morgen');
       default:
         if (diff < 0) {
-          return Text('vor ' + (diff * -1).toString() + ' Tagen');
+          return Text('vor ${diff * -1} Tagen');
         }
-        return Text('in ' + diff.toString() + ' Tagen');
+        return Text('in $diff Tagen');
     }
   }
 }
